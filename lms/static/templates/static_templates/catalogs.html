@@ -1,0 +1,856 @@
+<%! from django.utils.translation import ugettext as _ %>
+<%page expression_filter="h"/>
+<%!
+from catalog_mooc.models import catalogmoc
+##import lms.djangoapps.catalog_mooc as catalogmoc
+from django.conf import settings
+%>
+
+<%
+  get_moc = catalogmoc.objects.order_by('id')
+  name = settings.PLATFORM_NAME
+  
+%>
+
+<%inherit file="/main.html" />
+<link rel="stylesheet" type="text/css" href="/static/kaznu/css/all.css">
+
+  <link rel="icon" type="image/x-icon" href="/static/kaznu/images/favicon.4db81e2e2596.ico" />
+  
+  
+<script>
+var cssId = 'myCss';  // you could encode the css path itself to generate id..
+if (!document.getElementById(cssId))
+{
+    var head  = document.getElementsByTagName('head')[0];
+    var link  = document.createElement('link');
+    link.id   = cssId;
+    link.rel  = 'stylesheet';
+    link.type = 'text/css';
+    //link.href = '/static/kaznu/css/all.css';
+    //link.media = 'all';
+    //head.appendChild(link);
+	
+	link.id   = 'bootstrap';
+	link.href = '/static/kaznu/assets/css/bootstrap.css'; ///static/css/bootstrap.4.1.3.min.css
+	head.appendChild(link);
+
+    link.id   = 'tablefilter';
+	link.href = '/static/kaznu/assets/tablefilter/style/tablefilter.css';
+	head.appendChild(link);
+	
+	var head2  = document.getElementsByTagName('head')[0];
+    var link2  = document.createElement('link');
+	link2.type = 'text/javascript';
+	link2.src = "https://unpkg.com/tablefilter@0.7.2/dist/tablefilter/tablefilter.js"
+}
+
+</script>
+
+
+
+  
+<style>
+.h1-text {
+font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.helpCont {
+display:none;
+}
+.helpBtn {
+display:none;
+}
+tr {
+word-break: break-word;
+}
+caption {
+    display: table-header-group;
+}
+.rdiv {
+    width: unset;
+}
+.reset {
+border: none  !important;
+/*background-color: none !important;*/
+/*background-image: none !important;*/
+/*background-color: rgba(0, 0, 0, 0) !important;*/
+background: transparent url(static/kaznu/assets/tablefilter/style/themes/btn_clear_filters.png) center center no-repeat !important;
+box-shadow: none !important;
+}
+.reset_title {
+    position: sticky;
+    top: 9px;
+	font-weight: 500;
+	padding-right: 7px;
+}
+#demo {
+width : 99.9% !important;
+}
+.fltrow {
+    background-color: #45a0de73;
+}
+table.TF th {
+    background-color: #45a0de73;
+}
+.odd {
+    background-color: #45a0de1f;
+}
+
+header.global {
+    /*border-bottom: 1px solid #919191;*/
+    /*box-shadow: 0 1px 5px 0 rgba(0,0,0,0.1);*/
+    background: rgba(255,255,255,0.75);
+    position: relative;
+    width: 100%;
+    height: 76px;
+}
+header.global nav {
+    height: 40px;
+    margin: 0 auto;
+    padding: 18px 10px 0;
+    max-width: 1180px;
+	}
+header.global h1.logo {
+    float: left;
+    margin: -2px 39px 0 0;
+    position: relative;
+}
+header.global h1.logo a {
+    display: block;
+}
+header.global .nav-global {
+    margin-top: 10px;
+    list-style: none;
+    float: left;
+}
+header.global .nav-global li, header.global .nav-global div {
+    display: inline-block;
+    margin: 0 21px 0 0;
+    font-size: 0.875em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0 !important;
+}
+header.global .nav-global li a, header.global .nav-global div a {
+    display: block;
+    padding: 5px;
+    color: #45a0de;
+    font-weight: 600;
+}
+header.global .nav-courseware {
+    float: right;
+    margin-top: 5px;
+    list-style: none;
+}
+
+header.global .nav-courseware li .cta, header.global .nav-courseware div .cta, .login .form-actions button[type="submit"], .register .form-actions button[type="submit"], .passwordreset .form-actions button[type="submit"], #forgot-password-modal #password-reset .form-actions button[type="submit"], .view-survey .action-primary {
+    box-shadow: 0 2px 1px 0 none;
+    background: #45a0de;
+    color: #f2f2f2;
+}
+header.global .nav-courseware li .cta, header.global .nav-courseware div .cta, .login .form-actions button[type="submit"], .register .form-actions button[type="submit"], .passwordreset .form-actions button[type="submit"], #forgot-password-modal #password-reset .form-actions button[type="submit"], .view-survey .action-primary {
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-shadow: none;
+    font-weight: 500;
+    letter-spacing: 0;
+}
+
+header.global nav:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+header.global .user {
+    float: right;
+    margin-top: 5px;
+    padding-left: 0;
+}
+header.global .user .dropdown {
+    font-size: 0.875em;
+    padding: 0 10px;
+    color: #2e2e2e;
+    border: none;
+    background: #fff;
+    box-shadow: none;
+    text-shadow: none;
+	margin-top: -10px;
+}
+.sr {
+    background: #fff;
+    color: #000;
+}
+.sr, .nav-contents, .nav-skip, .view-teams .page-header-search .search-label {
+    border: 0;
+    clip: rect(1px 1px 1px 1px);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+.fa {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transform: translate(0, 0);
+}
+.fa-sort-down:before, .fa-sort-desc:before {
+    content: "\f0dd";
+}
+header.global .user .dropdown-menu.expanded {
+    display: block;
+}
+header.global .user .dropdown-menu {
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.3);
+    border: 1px solid #c8c8c8;
+    display: none;
+    margin-top: 0;
+    padding: 5px 10px;
+    position: absolute;
+    right: 0px;
+    top: 37px;
+    min-width: 120px;
+    z-index: 3;
+}
+header.global .user .dropdown-menu::before {
+    background: transparent;
+    border-top: 6px solid #fcfcfc;
+    border-right: 6px solid #fcfcfc;
+    border-bottom: 6px solid transparent;
+    border-left: 6px solid transparent;
+    box-shadow: 1px 0 0 0 #c8c8c8, 0 -1px 0 0 #c8c8c8;
+    content: "";
+    display: block;
+    height: 0px;
+    position: absolute;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    right: 7px;
+    top: -5px;
+    width: 0px;
+}
+header.global .user .dropdown-menu li:first-child {
+    border: none;
+    box-shadow: none;
+}
+header.global .user .dropdown-menu li {
+    display: block;
+    border-top: 1px dotted #cbcbcb;
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.05);
+}
+header.global .user .dropdown-menu li>a {
+    border: 1px solid transparent;
+    border-radius: 3px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    color: #45a0de;
+    cursor: pointer;
+    display: block;
+    margin: 5px 0px;
+    overflow: hidden;
+    padding: 3px 5px 4px;
+    text-overflow: ellipsis;
+    -webkit-transition: padding 0.15s linear 0s;
+    -moz-transition: padding 0.15s linear 0s;
+    transition: padding 0.15s linear 0s;
+    white-space: nowrap;
+    width: 100%;
+}
+header.global .user>.primary {
+    display: block;
+    float: left;
+    margin: 0;
+    position: relative;
+}
+
+
+@media screen and (max-width: 1100px) {
+.container {
+width: 94% !important;
+max-width: none;
+min-width: unset;
+}
+}
+</style>
+
+<div class="hero-section" style="
+width: 100vw;
+    position: relative;
+    background-color: beige;
+    left: calc(-50vw + 50%);
+    margin-left: calc(-48vw + 50%);
+    inset: 0px 28.5px 0px -28.5px;
+    background-image: url(https://open.kaznu.kz/static/kaznu/images/header.png);
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    block-size: 352px;
+    border-block-color: rgb(51, 51, 51);
+    border-color: rgb(51, 51, 51);
+    border-inline-color: rgb(51, 51, 51);
+    box-sizing: border-box;
+    caret-color: rgb(51, 51, 51);
+    color: rgb(51, 51, 51);
+    column-rule-color: rgb(51, 51, 51);
+    font-family: Roboto, sans-serif;
+    height: 352px;
+    inset-block: 0px;
+    inset-inline: -28.5px 28.5px;
+    line-height: 22.8571px;
+    outline-color: rgb(51, 51, 51);
+    perspective-origin: 540px 176px;
+    text-decoration: none solid rgb(51, 51, 51);
+    text-size-adjust: 100%;
+    transform-origin: 540px 176px;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-in-out;
+    -webkit-locale: &#39;ru&#39;;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-text-emphasis-color: rgb(51, 51, 51);
+    -webkit-text-fill-color: rgb(51, 51, 51);
+    -webkit-text-stroke-color: rgb(51, 51, 51);
+">
+    <div class="header-content" style="
+text-align: -webkit-center;
+    vertical-align: middle;
+">
+        <div class="header-content-inner" style="
+-webkit-text-fill-color: rgb(255, 255, 255);
+">
+             <h1 class="h1-text" style="
+
+">КАТАЛОГ<br>
+МАССОВЫХ ОТКРЫТЫХ ОНЛАЙН КУРСОВ,<br>
+РЕКОМЕНДОВАННЫХ К ПЕРЕЗАЧЕТУ</h1>
+<!--
+            <p class="p-text" style="block-size: 52px; border-block-color: rgb(0, 0, 0); border-color: rgb(0, 0, 0); border-inline-color: rgb(0, 0, 0); box-sizing: border-box; caret-color: rgb(51, 51, 51); color: rgb(0, 0, 0); column-rule-color: rgb(0, 0, 0); font-family: Roboto, sans-serif; font-size: 15px; height: 52px; inline-size: 900px; line-height: 26.25px; margin-block: 0px 10px; margin-bottom: 10px; margin-top: 0px; outline-color: rgb(0, 0, 0); perspective-origin: 450px 26px; text-align: justify; text-decoration: none solid rgb(51, 51, 51); text-size-adjust: 100%; transform-origin: 450px 26px; transition-duration: 0.3s; transition-timing-function: ease-in-out; width: 900px; -webkit-locale: &quot;ru&quot;; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); -webkit-text-emphasis-color: rgb(51, 51, 51); -webkit-text-fill-color: rgb(51, 51, 51); -webkit-text-stroke-color: rgb(0, 0, 0);">Казахский национальный университет им. аль-Фараби является лидером среди казахстанских университетов по внедрению MOOК на открытой платформе Open edX.</p>
+-->
+        </div>
+    </div>
+</div>
+
+<br>
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+
+<strong>Уважаемые студенты, магистранты, докторанты!</strong><br>
+
+Данный каталог создан для обучающихся Казахского национального университета имени аль-Фараби. Каждый из Вас может по желанию выбрать массовый открытый онлайн курс (МООК) как альтернативу дисциплине, которую предстоит изучить в рамках выбранной образовательной программы.<br>
+
+В каталог вводятся МООК, рекомендованные Учеными советами факультетов после апробации онлайн курсов преподавателями в образовательном процессе.<br>
+
+<strong>Цель каталога</strong> – предоставить обучающимся возможность выбора альтернативной формы изучения дисциплины при необходимости обучаться по гибкому графику либо при желании изучить дисциплину в рамках онлайн курса другого преподавателя КазНУ им.аль-Фараби, другого университета Казахстана и мира.<br>
+
+<strong>Ожидаемые результаты</strong> – перезачет результатов освоения онлайн-курсов. Итоговый балл, указанный в сертификате, вносится в аттестационную ведомость, а также в приложение к диплому лицами, ответственными за ведение указанной документации на факультете.<br>
+
+<strong>Примечание</strong><br>
+
+Обучающийся КазНУ им.аль-Фараби, желающий изучить МООК по дисциплине, не входящей в образовательную программу, по собственному желанию регистрируется на МООК на любой образовательной платформе Казахстана и мира по выбору в открытом доступе в объявленные сроки регистрации, изучает курс на бесплатной основе и по собственному желанию может приобрести сертификат, подтверждающий успешное завершение изучения МООК.<br>
+
+    </div>
+  </div>
+</div>
+20
+
+<table id="demo">
+    <thead>
+        <tr>
+            <th>country</th>
+            <th>iso</th>
+            <th>year</th>
+            <th>POP</th>
+            <th>XRAT</th>
+            <th>PPP</th>
+            <th>cgdp</th>
+            <th>cc</th>
+            <th>ci</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Benin</td>
+            <td>BEN</td>
+            <td>1998</td>
+            <td>5950.33</td>
+            <td>589.9517822</td>
+            <td>190.95</td>
+            <td>1178.46</td>
+            <td>90.98</td>
+            <td>7.55</td>
+        </tr>
+        <tr>
+            <td>Benin</td>
+            <td>BEN</td>
+            <td>1999</td>
+            <td>6109.53</td>
+            <td>615.6990967</td>
+            <td>200.19</td>
+            <td>1174.90</td>
+            <td>92.61</td>
+            <td>7.86</td>
+        </tr>
+        <tr>
+            <td>Benin</td>
+            <td>BEN</td>
+            <td>2000</td>
+            <td>6272.00</td>
+            <td>711.9763184</td>
+            <td>200.61</td>
+            <td>1224.74</td>
+            <td>92.27</td>
+            <td>8.25</td>
+        </tr>
+        <tr>
+            <td>Burkina Faso</td>
+            <td>BFA</td>
+            <td>1994</td>
+            <td>9755.03</td>
+            <td>555.2047119</td>
+            <td>125.76</td>
+            <td>838.76</td>
+            <td>79.81</td>
+            <td>6.57</td>
+        </tr>
+        <tr>
+            <td>Burkina Faso</td>
+            <td>BFA</td>
+            <td>1995</td>
+            <td>9988.00</td>
+            <td>499.148407</td>
+            <td>136.65</td>
+            <td>860.89</td>
+            <td>80.41</td>
+            <td>9.29</td>
+        </tr>
+        <tr>
+            <td>Burkina Faso</td>
+            <td>BFA</td>
+            <td>1996</td>
+            <td>10225.00</td>
+            <td>511.5523987</td>
+            <td>144.18</td>
+            <td>881.11</td>
+            <td>80.40</td>
+            <td>12.12</td>
+        </tr>
+        <tr>
+            <td>Burkina Faso</td>
+            <td>BFA</td>
+            <td>1997</td>
+            <td>10473.53</td>
+            <td>583.6693726</td>
+            <td>141.78</td>
+            <td>899.01</td>
+            <td>76.94</td>
+            <td>14.94</td>
+        </tr>
+        <tr>
+            <td>Russia</td>
+            <td>RUS</td>
+            <td>1998</td>
+            <td>146899.01</td>
+            <td>9.705082893</td>
+            <td>2.64</td>
+            <td>7086.39</td>
+            <td>67.73</td>
+            <td>9.20</td>
+        </tr>
+        <tr>
+            <td>Russia</td>
+            <td>RUS</td>
+            <td>1999</td>
+            <td>146308.99</td>
+            <td>24.6199398</td>
+            <td>4.03</td>
+            <td>8074.70</td>
+            <td>57.35</td>
+            <td>8.81</td>
+        </tr>
+        <tr>
+            <td>Russia</td>
+            <td>RUS</td>
+            <td>2000</td>
+            <td>145555.01</td>
+            <td>28.12916946</td>
+            <td>4.85</td>
+            <td>9995.91</td>
+            <td>54.74</td>
+            <td>8.79</td>
+        </tr>
+        <tr>
+            <td>Rwanda</td>
+            <td>RWA</td>
+            <td>1994</td>
+            <td>6230.00</td>
+            <td>194.517</td>
+            <td>50.39</td>
+            <td>529.48</td>
+            <td>132.16</td>
+            <td>4.48</td>
+        </tr>
+        <tr>
+            <td>Rwanda</td>
+            <td>RWA</td>
+            <td>1995</td>
+            <td>6400.00</td>
+            <td>262.1975098</td>
+            <td>70.67</td>
+            <td>746.34</td>
+            <td>92.77</td>
+            <td>3.08</td>
+        </tr>
+        <tr>
+            <td>Rwanda</td>
+            <td>RWA</td>
+            <td>1996</td>
+            <td>6727.00</td>
+            <td>306.8200073</td>
+            <td>77.90</td>
+            <td>823.25</td>
+            <td>89.71</td>
+            <td>3.21</td>
+        </tr>
+        <tr>
+            <td>Rwanda</td>
+            <td>RWA</td>
+            <td>1997</td>
+            <td>7895.18</td>
+            <td>301.5297852</td>
+            <td>84.13</td>
+            <td>847.79</td>
+            <td>91.44</td>
+            <td>3.72</td>
+        </tr>
+        <tr>
+            <td>Rwanda</td>
+            <td>RWA</td>
+            <td>1998</td>
+            <td>8105.00</td>
+            <td>312.3140869</td>
+            <td>85.32</td>
+            <td>914.22</td>
+            <td>89.34</td>
+            <td>4.22</td>
+        </tr>
+        <tr>
+            <td>El Salvador</td>
+            <td>SLV</td>
+            <td>1995</td>
+            <td>5669.00</td>
+            <td>8.754583359</td>
+            <td>3.54</td>
+            <td>4143.59</td>
+            <td>89.31</td>
+            <td>10.35</td>
+        </tr>
+        <tr>
+            <td>El Salvador</td>
+            <td>SLV</td>
+            <td>1996</td>
+            <td>5798.00</td>
+            <td>8.755000114</td>
+            <td>3.69</td>
+            <td>4235.79</td>
+            <td>88.77</td>
+            <td>7.79</td>
+        </tr>
+        <tr>
+            <td>El Salvador</td>
+            <td>SLV</td>
+            <td>1997</td>
+            <td>5911.00</td>
+            <td>8.756250381</td>
+            <td>3.74</td>
+            <td>4408.41</td>
+            <td>87.05</td>
+            <td>7.90</td>
+        </tr>
+        <tr>
+            <td>Slovak Republic</td>
+            <td>SVK</td>
+            <td>2000</td>
+            <td>5401.00</td>
+            <td>46.0352</td>
+            <td>13.02</td>
+            <td>12618.53</td>
+            <td>52.22</td>
+            <td>24.78</td>
+        </tr>
+        <tr>
+            <td>Slovenia</td>
+            <td>SVN</td>
+            <td>1994</td>
+            <td>1988.90</td>
+            <td>128.8085938</td>
+            <td>79.97</td>
+            <td>11662.12</td>
+            <td>53.21</td>
+            <td>19.87</td>
+        </tr>
+        <tr>
+            <td>Slovenia</td>
+            <td>SVN</td>
+            <td>1995</td>
+            <td>1990.00</td>
+            <td>118.5185013</td>
+            <td>89.03</td>
+            <td>12574.96</td>
+            <td>54.46</td>
+            <td>23.11</td>
+        </tr>
+        <tr>
+            <td>Slovenia</td>
+            <td>SVN</td>
+            <td>1996</td>
+            <td>1991.00</td>
+            <td>135.3643036</td>
+            <td>97.27</td>
+            <td>13151.51</td>
+            <td>54.32</td>
+            <td>23.23</td>
+        </tr>
+        <tr>
+            <td>Slovenia</td>
+            <td>SVN</td>
+            <td>1997</td>
+            <td>1985.96</td>
+            <td>159.6882935</td>
+            <td>103.96</td>
+            <td>14143.02</td>
+            <td>53.24</td>
+            <td>24.14</td>
+        </tr>
+        <tr>
+            <td>Slovenia</td>
+            <td>SVN</td>
+            <td>1998</td>
+            <td>1982.60</td>
+            <td>166.134201</td>
+            <td>108.93</td>
+            <td>15067.34</td>
+            <td>52.82</td>
+            <td>25.35</td>
+        </tr>
+        <tr>
+            <td>Zambia</td>
+            <td>ZMB</td>
+            <td>1994</td>
+            <td>8740.72</td>
+            <td>669.3706055</td>
+            <td>307.48</td>
+            <td>834.19</td>
+            <td>75.43</td>
+            <td>9.86</td>
+        </tr>
+        <tr>
+            <td>Zambia</td>
+            <td>ZMB</td>
+            <td>1995</td>
+            <td>8980.00</td>
+            <td>864.1192017</td>
+            <td>402.40</td>
+            <td>829.37</td>
+            <td>76.55</td>
+            <td>10.31</td>
+        </tr>
+        <tr>
+            <td>Zambia</td>
+            <td>ZMB</td>
+            <td>1996</td>
+            <td>9214.40</td>
+            <td>1207.900024</td>
+            <td>515.01</td>
+            <td>838.05</td>
+            <td>78.74</td>
+            <td>10.99</td>
+        </tr>
+        <tr>
+            <td>Zambia</td>
+            <td>ZMB</td>
+            <td>1997</td>
+            <td>9443.21</td>
+            <td>1314.498047</td>
+            <td>596.97</td>
+            <td>851.47</td>
+            <td>77.59</td>
+            <td>12.15</td>
+        </tr>
+        <tr>
+            <td>Zambia</td>
+            <td>ZMB</td>
+            <td>1998</td>
+            <td>9665.71</td>
+            <td>1862.06897</td>
+            <td>744.91</td>
+            <td>800.69</td>
+            <td>85.12</td>
+            <td>13.75</td>
+        </tr>
+        <tr>
+            <td>Zambia</td>
+            <td>ZMB</td>
+            <td>1999</td>
+            <td>9881.21</td>
+            <td>2388.019043</td>
+            <td>941.87</td>
+            <td>765.24</td>
+            <td>91.82</td>
+            <td>15.30</td>
+        </tr>
+        <tr>
+            <td>Zambia</td>
+            <td>ZMB</td>
+            <td>2000</td>
+            <td>10089.00</td>
+            <td>3110.843994</td>
+            <td>1157.63</td>
+            <td>840.97</td>
+            <td>86.33</td>
+            <td>15.38</td>
+        </tr>
+        <tr>
+            <td>Zimbabwe</td>
+            <td>ZWE</td>
+            <td>1994</td>
+            <td>10775.35</td>
+            <td>8.151538849</td>
+            <td>2.01</td>
+            <td>2586.84</td>
+            <td>60.10</td>
+            <td>18.53</td>
+        </tr>
+        <tr>
+            <td>Zimbabwe</td>
+            <td>ZWE</td>
+            <td>1995</td>
+            <td>11011.00</td>
+            <td>8.66537571</td>
+            <td>2.15</td>
+            <td>2603.37</td>
+            <td>66.89</td>
+            <td>15.03</td>
+        </tr>
+        <tr>
+            <td>Zimbabwe</td>
+            <td>ZWE</td>
+            <td>1996</td>
+            <td>11242.16</td>
+            <td>10.00234985</td>
+            <td>2.64</td>
+            <td>2860.23</td>
+            <td>72.06</td>
+            <td>11.32</td>
+        </tr>
+        <tr>
+            <td>Zimbabwe</td>
+            <td>ZWE</td>
+            <td>1997</td>
+            <td>11923.52</td>
+            <td>12.11128998</td>
+            <td>3.17</td>
+            <td>2727.06</td>
+            <td>82.82</td>
+            <td>11.01</td>
+        </tr>
+        <tr>
+            <td>Zimbabwe</td>
+            <td>ZWE</td>
+            <td>1998</td>
+            <td>12153.85</td>
+            <td>23.67910957</td>
+            <td>4.06</td>
+            <td>2799.85</td>
+            <td>77.66</td>
+            <td>10.75</td>
+        </tr>
+        <tr>
+            <td>Zimbabwe</td>
+            <td>ZWE</td>
+            <td>1999</td>
+            <td>12388.32</td>
+            <td>38.30120087</td>
+            <td>6.12</td>
+            <td>2770.48</td>
+            <td>76.89</td>
+            <td>10.73</td>
+        </tr>
+        <tr>
+            <td>Zimbabwe</td>
+            <td>ZWE</td>
+            <td>2000</td>
+            <td>12627.00</td>
+            <td>44.41791916</td>
+            <td>9.48</td>
+            <td>2607.03</td>
+            <td>69.23</td>
+            <td>8.62</td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+
+<script src="https://unpkg.com/tablefilter@0.7.2/dist/tablefilter/tablefilter.js"></script>
+
+<script data-config>
+    var filtersConfig = {
+        base_path: 'https://unpkg.com/tablefilter@0.7.2/dist/tablefilter/',
+        col_1: 'select',
+        col_2: 'select',
+        col_3: 'select',
+        alternate_rows: true,
+        rows_counter: true,
+        btn_reset: true,
+        loader: true,
+        status_bar: true,
+        mark_active_columns: true,
+        highlight_keywords: true,
+        col_types: [
+            'string', 'string', 'number',
+            'number', 'number', 'number',
+            'number', 'number', 'number'
+        ],
+        custom_options: {
+            cols:[3],
+            texts: [[
+                '0 - 25 000',
+                '100 000 - 1 500 000'
+            ]],
+            values: [[
+                '>0 && <=25000',
+                '>100000 && <=1500000'
+            ]],
+            sorts: [false]
+        },
+        col_widths: [
+            '150px', '100px', '100px',
+            '100px', '100px', '100px',
+            '70px', '60px', '60px'
+        ],
+        extensions:[{ name: 'sort' }]
+    };
+
+    var tf = new TableFilter('demo', filtersConfig);
+    tf.init();
+</script>
+

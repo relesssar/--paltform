@@ -1,0 +1,162 @@
+## mako
+<%!
+  from django.core.urlresolvers import reverse
+  from django.utils.translation import ugettext as _
+  from branding.api import get_footer
+%>
+<% footer = get_footer(is_secure=is_secure) %>
+<%namespace name='static' file='static_content.html'/>
+
+<!-- footer.html -->
+<style>
+.wrapper-footer {
+    box-shadow: 0 -1px 5px 0 rgba(0,0,0,0.1);
+    border-top: 1px solid #c5c6c7;
+    padding: 25px 10px 30px 10px;
+    background: #fff;
+    clear: both;
+}
+.wrapper-footer footer#footer-openedx {
+    box-sizing: border-box;
+    max-width: 1920px;
+    margin-left: auto;
+    margin-right: auto;
+    margin: 0 auto;
+}
+.wrapper-footer footer#footer-openedx .colophon {
+    float: left;
+    display: block;
+    margin-right: 2.35765%;
+    width: 65.88078%;
+}
+.wrapper-footer footer#footer-openedx .colophon .nav-colophon {
+    margin: 5px 0 30px 0;
+}
+nav ul, nav ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.wrapper-footer footer#footer-openedx .colophon .nav-colophon li {
+    float: left;
+    margin-right: 15px;
+}
+.wrapper-footer footer#footer-openedx .colophon .nav-colophon li a {
+    color: #333;
+}
+.wrapper-footer footer#footer-openedx .footer-about-openedx {
+    float: left;
+    display: block;
+    margin-right: 2.35765%;
+    width: 31.76157%;
+    text-align: right;
+    vertical-align: bottom;
+}
+.wrapper-footer footer#footer-openedx .colophon:last-child {
+    margin-right: 0;
+}
+.wrapper-footer footer#footer-openedx .footer-about-openedx a {
+    float: right;
+    display: inline-block;
+}
+.wrapper-footer footer#footer-openedx .footer-about-openedx:last-child {
+    margin-right: 0;
+}
+.wrapper-footer footer#footer-openedx .copyright {
+    margin: 50px 0 8px 0;
+    font-size: 0.6875em;
+    color: #767676;
+    text-align: left;
+}
+</style>
+
+<div class="wrapper wrapper-footer" style="max-width: 1167px;
+    margin-left: auto;
+    margin-right: auto;
+    min-height: 114px;">
+
+
+
+  <footer id="footer-openedx" class="grid-container"
+    ## When rendering the footer through the branding API,
+    ## the direction may not be set on the parent element,
+    ## so we set it here.
+    % if bidi:
+      dir=${bidi}
+    % endif
+  >
+    <div class="colophon">
+      <nav class="nav-colophon" aria-label="${_('About')}">
+          <ol>
+          <li><a href="${reverse('about')}">${_('About Us')}</a></li>
+          <li><a id="contact" href="${marketing_link('CONTACT')}">${_("Contact")}</a></li>
+          <li><a href="${marketing_link('FAQ')}">${_('FAQ')}</li>
+
+          
+          </ol>
+      </nav>
+
+
+   <div class="wrapper-logo">
+            ## The default logo is a placeholder.
+            ## You can either replace this link entirely or update
+            ## the FOOTER_ORGANIZATION_IMAGE in Django settings.
+            ## If you customize FOOTER_ORGANIZATION_IMAGE, then the image
+            ## can be included in the footer on other sites
+            ## (e.g. a blog or marketing front-end) to provide a consistent
+            ## user experience.  See the branding app for details.
+
+
+      </div>
+
+
+    
+      ## Site operators: Please do not remove this paragraph! This attributes back to edX and makes your acknowledgement of edX's trademarks clear.
+      <p class="copyright"> &copy;${_('All rights reserved')} | <a href="http://www.kaznu.kz"> ${_('Al-Farabi Kazakh National University')}</a></p>
+     </div>
+
+    ## Please leave this link and use one of the logos provided
+    ## The OpenEdX link may be hidden when this view is served
+    ## through an API to partner sites (such as marketing sites or blogs),
+    ## which are not technically powered by OpenEdX.
+    % if not hide_openedx_link:
+ <div class="footer-about-openedx">
+<div class="colophon">
+   <div class="footer-social">
+       <p> 
+        <a href="https://www.facebook.com/">
+            <i class="icon fa fa-facebook-square" style="font-size:40px;margin:10px"></i>
+        </a>
+        </p>
+        
+        
+        
+        
+        <p>
+        <a href="https://www.instagram.com/open_kaznu_kz/">
+            <i class="icon fa fa-instagram" style="font-size:40px;margin:10px"></i>
+        </a>
+        </p>
+      </div>
+ </div>
+    % endif
+  </footer>
+
+
+
+
+
+
+
+</div>
+% if include_dependencies:
+  <%static:js group='base_vendor'/>
+  <%static:css group='style-vendor'/>
+  <%include file="widgets/segment-io.html" />
+  <%include file="widgets/segment-io-footer.html" />
+% endif
+% if footer_css_urls:
+  % for url in footer_css_urls:
+    <link rel="stylesheet" type="text/css" href="${url}"></link>
+  % endfor
+% endif

@@ -1,0 +1,118 @@
+<%page expression_filter="h"/>
+<%namespace name='static' file='/static_content.html'/>
+<%! from django.utils.translation import ugettext as _%>
+
+<%
+# set doc language direction
+from django.utils.translation import get_language_bidi
+dir_rtl = 'rtl' if get_language_bidi() else 'ltr'
+course_mode_class = course_mode if course_mode else ''
+%>
+
+<!DOCTYPE html>
+<html class="no-js" lang="${LANGUAGE_CODE}">
+<head dir="${dir_rtl}">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>${document_title}</title>
+
+    <%static:css group='style-certificates'/>
+    <script src="/static/kaznu/assets/js/dom-to-image.min.js"></script>
+    <script src="/static/kaznu/assets/js/jquery1.11.min.js"></script>
+
+</head>
+
+<body class="layout-accomplishment view-valid-accomplishment ${dir_rtl} certificate certificate-${course_mode_class}" data-view="valid-accomplishment">
+
+    <div class="wrapper-view" dir="${dir_rtl}">
+
+        <%include file="_accomplishment-header.html" />
+
+        <hr class="divider sr-only">
+
+        ${self.body()}
+
+        <hr class="divider sr-only">
+
+        <%include file="_accomplishment-footer.html" />
+    </div>
+
+    <%include file="_assets-secondary.html" />
+    %if badge:
+        <%include file="_badges-modal.html" />
+    %endif
+
+<script>
+let cert_number = document.location.pathname;
+cert_number = cert_number.replace('/certificates/','');
+cert_number = cert_number + '.png';
+$('#getimage').attr('download',cert_number);
+//alert(cert_number);
+  document.onreadystatechange = function () {
+    if (document.readyState === "complete") {
+      $(".sign2").attr("src","/static/kaznu/images/logo.png");
+      $(".sign3").attr("src","/static/kaznu/images/logo.png");
+//      $(".sign4").attr("src","/static/kaznu/images/logo.png");
+//      $(".sign5").attr("src","/static/kaznu/images/logo.png");
+//      $(".sign6").attr("src","/static/kaznu/images/logo.png");
+//      $(".sign7").attr("src","/static/kaznu/images/logo.png");
+      ready();
+      myHide();
+    }
+  }
+
+function ready() {
+//alert(1);
+ console.log('render');
+
+const render = node =>
+  domtoimage.toPng(node)
+  .then(dataUrl => {
+  console.log(performance.now()-pf)
+    const img = new Image();
+    img.src = dataUrl;
+    $('#image').append(img);
+        var geturl = dataUrl.replace(/^data:image\/[^;]+/, 'data:application/octet-stream');
+        $("#getimage").attr("href",geturl);
+  })
+  .catch(error =>
+    console.error('oops, something went wrong!', error)
+  );
+
+const foo = document.getElementById('foo1');
+//const foo = document.getElementsByClassName('accomplishment-rendering');
+var pf=performance.now();
+
+render(foo);
+//alert('render complited');
+}
+
+
+function myHide() {
+function addStyles(element,styles){
+  for(id in styles){
+    element.style[id] = styles[id];
+  }
+}
+var nFilter = document.getElementById('image');
+var styles = {
+  display:"none"
+}
+addStyles(nFilter,styles);
+};
+
+
+//const secondFunction = async () => {
+//  await render(foo);
+//  //await setTimeout(render(foo), 3000);
+//  myHide();
+//}
+//secondFunction();
+
+</script>
+
+
+</body>
+</html>

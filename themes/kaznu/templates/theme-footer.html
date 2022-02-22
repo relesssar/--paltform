@@ -1,0 +1,83 @@
+## mako
+<%!
+  from django.core.urlresolvers import reverse
+  from django.utils.translation import ugettext as _
+  from branding.api import get_footer
+%>
+<% footer = get_footer(is_secure=is_secure) %>
+<%namespace name='static' file='static_content.html'/>
+
+<div class="wrapper wrapper-footer">
+  <footer id="footer-openedx"
+    ## When rendering the footer through the branding API,
+    ## the direction may not be set on the parent element,
+    ## so we set it here.
+    % if bidi:
+      dir=${bidi}
+    % endif
+  >
+<style>
+   ul.hr {
+    margin: 0; /* Обнуляем значение отступов */
+    padding: 4px; /* Значение полей */
+   }
+   ul.hr li {
+    display: inline; /* Отображать как строчный элемент */
+    margin-right: 5px; /* Отступ слева */
+    }
+  </style>
+    <div class="colophon">
+      <nav class="nav-colophon" aria-label="${_('About')}">
+          <ol>
+          <li><a id="contact" href="${marketing_link('CONTACT')}">${_("Contact")}</a></li>
+          </ol>
+      </nav>
+
+      <div class="wrapper-logo">   
+         <div class="footer-social">
+		 <ul class="hr">
+        <li>
+        <a href="https://www.facebook.com/moocs.kz">
+            <i class="icon fa fa-facebook-square" style="font-size:40px;margin:10px"></i>
+        </a>
+        </li>
+        
+        
+        <li>
+        <a href="https://www.instagram.com/moocs.kz">
+            <i class="icon fa fa-instagram" style="font-size:40px;margin:10px"></i>
+        </a>
+        </li>
+      </ul>
+       
+      </div>
+      </div>
+      ## Site operators: Please do not remove this paragraph! This attributes back to edX and makes your acknowledgement of edX's trademarks clear.
+      <p class="copyright">&copy; Все права защищены <a href="#">НАНВШК РК</a></p>
+    </div>
+    ## Please leave this link and use one of the logos provided
+    ## The OpenEdX link may be hidden when this view is served
+    ## through an API to partner sites (such as marketing sites or blogs),
+    ## which are not technically powered by OpenEdX.
+    % if not hide_openedx_link:
+    <div class="footer-about-openedx">
+      <p>
+        <a href="http://edu.gov.kz">
+          <img src="${static.url('themes/kaznu/images/support.jpg')}" width=""/>
+        </a>
+      </p>
+    </div>
+    % endif
+  </footer>
+</div>
+% if include_dependencies:
+  <%static:js group='base_vendor'/>
+  <%static:css group='style-vendor'/>
+  <%include file="widgets/segment-io.html" />
+  <%include file="widgets/segment-io-footer.html" />
+% endif
+% if footer_css_urls:
+  % for url in footer_css_urls:
+    <link rel="stylesheet" type="text/css" href="${url}"></link>
+  % endfor
+% endif

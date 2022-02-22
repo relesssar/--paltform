@@ -1,0 +1,173 @@
+<%page expression_filter="h"/>
+<%!
+    import json
+    from django.utils.translation import ugettext as _
+    from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+    from openedx.core.djangolib.js_utils import dump_js_escaped_json
+%>
+<%namespace name='static' file='/static_content.html'/>
+
+<%inherit file="../main.html" />
+
+<%block name="pagetitle">${_("Sign in or Register")}</%block>
+
+<%block name="js_extra">
+    <%static:require_module module_name="js/student_account/logistration_factory" class_name="LogistrationFactory">
+        var options = ${data | n, dump_js_escaped_json};
+        LogistrationFactory(options);
+        if ('newrelic' in window) {
+            newrelic.finished();
+            // Because of a New Relic bug, the finished() event doesn't show up
+            // in Insights, so we have to make a new PageAction that is basically
+            // the same thing. We still want newrelic.finished() for session
+            // traces though.
+            newrelic.addPageAction('xfinished');
+        }
+    </%static:require_module>
+    % if configuration_helpers.get_value('DISPLAY_TOS_IN_MODAL_ON_REGISTRATION_PAGE', False):
+    <script type="text/javascript" src="${static.url('js/student_account/tos_modal.js')}"></script>
+    % endif
+</%block>
+
+<%block name="header_extras">
+    % for template_name in ["account", "access", "form_field", "login", "register", "institution_login", "institution_register", "password_reset", "account_recovery", "hinted_login"]:
+        <script type="text/template" id="${template_name}-tpl">
+            <%static:include path="student_account/${template_name}.underscore" />
+        </script>
+    % endfor
+</%block>
+<div class="section-bkg-wrapper">
+    <main id="main" aria-label="Content" tabindex="-1">
+        <div id="content-container" class="login-register-content">
+            % if enable_enterprise_sidebar:
+                <%include file="enterprise_sidebar.html" />
+                <%
+                    border_class = 'border-left'
+                %>
+            % else:
+                <%
+                    border_class = ''
+                %>
+            % endif
+            <div id="login-and-registration-container" class="login-register ${border_class}"></div>
+        </div>
+    </main>
+</div>
+
+<div class="section-bkg-wrapper">
+
+<div style="text-align: center;">
+    ${_("or")} 
+</div>
+
+    <div id="univerauth" class="login-register " style="
+    width: 24%;
+    background-color: #126f9a;
+    text-align: center;
+    height: 2em;
+    margin: auto;
+    border-radius: 8px;
+    line-height: 2em;
+    color: white;
+    cursor: pointer;
+    margin-top: 9px;
+">
+        ${_("Login via Univer")}
+    </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    $( "#univerauth" ).click(function() {
+        window.location.href = "https://univer.kaznu.kz/user/loginopenkaznu";
+    });
+</script>
+
+<script>
+  window.onload = function() {
+    //alert('Страница загружена');
+	
+	        var html = '<div class=\"form-field select-university\"><label for=\"register-university\" class=\"focus-in\"><span class=\"label-text\">Университет</span><span id=register-university-optional-label\" class=\"label-optional hidden\">(optional)</span><span class=\"icon fa\" id=\"register-university-validation-icon\" aria-hidden=\"true\"></span></label><select id=\"register-university\" name=\"university\" class=\"input-inline\" data-errormsg-optional=\"Select the highest level of education you have completed.\" aria-required=\"false\" ><option value=\"\" data-isdefault=\"true\" selected=\"\"></option>';
+	
+	html += '<option value=\"none\">Я не студент</option>';
+	html += '<option value=\"other\">Другой</option>';
+
+html += '<option value=\"kaznu.kz\">Казахский национальный университет имени аль-Фараби</option>';
+html += '<option value=\"arsu.kz\">Актюбинский региональный университет имени К. Жубанова</option>';
+html += '<option value=\"atu.kz\">Алматинский технологический университет</option>';
+html += '<option value=\"aues.kz\">Алматинский университет энергетики и связи имени Г.Даукеева</option>';
+html += '<option value=\"almau.edu.kz\">Алматы менеджмент университет</option>';
+html += '<option value=\"arkgpi\">Аркалыкский педагогический институт имени И.Алтынсарина</option>';
+html += '<option value=\"asu.edu.kz\">Атырауский университет имени Х.Досмухамедова</option>';
+html += '<option value=\"vkgu.kz\">Восточно-Казахстанский университет имени С. Аманжолова</option>';
+html += '<option value=\"eurazir.kz\">Евразийская инновационная академия экономики и управления</option>';
+html += '<option value=\"vuzkunaeva.kz\">Евразийская юридическая академия имени Д.А. Кунаева</option>';
+html += '<option value=\"list.ru\">Евразийский гуманитарный институт</option>';
+html += '<option value=\"enu.kz\">Евразийский национальный университет имени Л.Н. Гумилёва</option>';
+html += '<option value=\"etu.edu.kz\">Евразийский технологический университет</option>';
+html += '<option value=\"nmu.kz\">Египетский университет исламской культуры Нур-Мубарак</option>';
+html += '<option value=\"univer_zhez\">Жезказганский университет имени О.А.Байконурова</option>';
+html += '<option value=\"zhgu.edu.kz\">Жетысуский университет имени И.Жансугурова</option>';
+html += '<option value=\"wkitu\">Западно-Казахстанский инновационно-технологический университет</option>';
+html += '<option value=\"wksu.kz\">Западно-Казахстанский университет имени М.Утемисова</option>';
+html += '<option value=\"ineu.kz\">Инновационный Евразийский университет</option>';
+html += '<option value=\"inbox.ru\">Казахская академия спорта и туризма</option>';
+html += '<option value=\"art-oner.kz\">Казахская национальная академия искусств имени Т.К.Жургенова</option>';
+html += '<option value=\"conservatoire.kz\">Казахская национальная консерватория имени Курмангазы</option>';
+html += '<option value=\"agun.katu\">Казахский агротехнический университет имени С.Сейфуллина</option>';
+html += '<option value=\"kazguiu.kz\">Казахский гуманитарно-юридический инновационный университет</option>';
+html += '<option value=\"kazguu.kz\">Казахский гуманитарно-юридический университет имени М.С. Нарикбаева</option>';
+html += '<option value=\"kaznau.kz\">Казахский национальный аграрный исследовательский университет</option>';
+html += '<option value=\"kazmkpu.kz\">Казахский национальный женский педагогический университет</option>';
+html += '<option value=\"satbayev.university\">Казахский национальный исследовательский технический университет имени К.И. Сатпаева</option>';
+html += '<option value=\"kaznmu.kz\">Казахский национальный медицинский университет имени С.Д.Асфендиярова</option>';
+html += '<option value=\"kaznpu.kz\">Казахский национальный педагогический университет имени Абая</option>';
+html += '<option value=\"ablaikhan.kz\">Казахский университет международных отношений и мировых языков имени Абылай хана</option>';
+html += '<option value=\"akutb\">Казахский университет технологии и бизнеса</option>';
+html += '<option value=\"kuef.kz\">Казахский университет экономики, финансов и международной торговли</option>';
+html += '<option value=\"akparat.kz\">Казахско-Русский международный университет</option>';
+html += '<option value=\"kazetu.kz\">Казахстанский инженерно-технологический университет </option>';
+html += '<option value=\"kazuits.kz\">Казахстанский университет инновационных и телекоммуникационных систем</option>';
+html += '<option value=\"kafu_ukg\">Казахстанско-Американский свободный университет</option>';
+html += '<option value=\"kbtu.kz\">Казахстанско-Британский технический университет  </option>';
+html += '<option value=\"dku.kz\">Казахстанско-Немецкий университет </option>';
+html += '<option value=\"medkrmu.kz\">Казахстанско-Российский медицинский университет</option>';
+html += '<option value=\"kgiu.kz\">Карагандинский индустриальный университет</option>';
+html += '<option value=\"kstu.kz\">Карагандинский технический университет</option>';
+html += '<option value=\"ksu.kz\">Карагандинский университет имени Е.А. Букетова</option>';
+html += '<option value=\"cu.edu.kz\">Каспийский Университет</option>';
+html += '<option value=\"kguti.kz\">Каспийский университет технологий и инжиниринга имени Ш.Есенова</option>';
+html += '<option value=\"kuam-kokchetau\">Кокшетауский университет имени А.Мырзахметова</option>';
+html += '<option value=\"kgu.kz\">Кокшетауский университет имени Ш.Уалиханова</option>';
+html += '<option value=\"kineu.kz\">Костанайский инженерно-экономический университет имени М.Дулатова</option>';
+html += '<option value=\"ksu.edu.kz\">Костанайский региональный университет имени А.Байтурсынова</option>';
+html += '<option value=\"kgpi118\">Костанайский региональный университет имениА.Байтурсынов</option>';
+html += '<option value=\"korkyt.kz\">Кызылординский университет имени Коркыт Ата</option>';
+html += '<option value=\"mok.kz\">Международная образовательная корпорация</option>';
+html += '<option value=\"mgtu-shymkent\">Международный гуманитарно-технический университет</option>';
+html += '<option value=\"ayu.edu.kz\">Международный казахско-турецкий университет имени Х.А.Ясави</option>';
+html += '<option value=\"aiu.kz\">Международный университет Астана</option>';
+html += '<option value=\"iitu.kz\">Международный университет информационных технологии</option>';
+html += '<option value=\"nu.edu.kz\">Назарбаев университет</option>';
+html += '<option value=\"pspu2017\">Павлодарский педагогический университет</option>';
+html += '<option value=\"rsiu2012\">Региональный социально-инновационный университет </option>';
+html += '<option value=\"rii.kz\">Рудненский индустриальный институт</option>';
+html += '<option value=\"nkzu.kz\">Северо-Казахстанский университет имени М. Козыбаева</option>';
+html += '<option value=\"tarsu.kz\">Таразский региональный университет имени М.Х. Дулати</option>';
+html += '<option value=\"tou.edu.kz\">Торайгыров Университет</option>';
+html += '<option value=\"sdu.edu.kz\">Университет имени С.Демиреля</option>';
+html += '<option value=\"kainar-edu.kz\">Университет Кайнар</option>';
+html += '<option value=\"kimep.kz\">Университет КИМЭП</option>';
+html += '<option value=\"uib.kz\">Университет международного бизнеса</option>';
+html += '<option value=\"narxoz.kz\">Университет Нархоз </option>';
+html += '<option value=\"turan-edu.kz\">Университет Туран</option>';
+html += '<option value=\"semgu.kz\">Университет Шакарима</option>';
+html += '<option value=\"canselyarya\">Южно-Казахстанский университет имени М. Ауэзова </option>';
+	
+	html += '</select><span id=\"register-university-validation-error\" class=\"tip error\" aria-live=\"assertive\"><span class=\"sr-only\"></span><span id=\"register-university-validation-error-msg\"></span></span></div>';
+    element = document.getElementsByClassName("select-level_of_education");
+    element[0].innerHTML =  element[0].innerHTML + html;
+
+  };
+</script>

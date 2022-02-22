@@ -1,0 +1,360 @@
+<%! from django.utils.translation import ugettext as _ %>
+<%inherit file="/main.html" />
+<link rel="stylesheet" type="text/css" href="/static/kaznu/css/all.css">
+<link rel="stylesheet" type="text/css" href="/static/css/bootstrap.4.1.3.min.css">
+
+<script>
+var cssId = 'myCss';  // you could encode the css path itself to generate id..
+if (!document.getElementById(cssId))
+{
+    var head  = document.getElementsByTagName('head')[0];
+    var link  = document.createElement('link');
+    link.id   = cssId;
+    link.rel  = 'stylesheet';
+    link.type = 'text/css';
+    link.href = '/static/kaznu/css/all.css';
+    link.media = 'all';
+    head.appendChild(link);
+}
+</script>
+
+<style>
+p {
+/*text-align:justify;*/
+}
+.h1-text {
+font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+h2 {
+font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+.main-container {
+text-align: center;
+}
+
+
+button {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  border: 0;
+  vertical-align: middle;
+  text-decoration: none;
+  font-size: inherit;
+  font-family: inherit;
+}
+button.learn-more {
+  font-weight: 600;
+  color: #fff;
+  text-transform: uppercase;
+  padding: 1.25em 2em;
+  background: #0075b4;
+  border: 2px solid #003450;
+  border-radius: 0.75em;
+  transform-style: preserve-3d;
+  transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), background 150ms cubic-bezier(0, 0, 0.58, 1);
+}
+button.learn-more::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #2889bd;
+  border-radius: inherit;
+  box-shadow: 0 0 0 2px #003450, 0 0.625em 0 0 #e2e2e2;
+  transform: translate3d(0, 0.75em, -1em);
+  transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), box-shadow 150ms cubic-bezier(0, 0, 0.58, 1);
+}
+button.learn-more:hover {
+  background: #7abfe4;
+  transform: translate(0, 0.25em);
+}
+button.learn-more:hover::before {
+  box-shadow: 0 0 0 2px #003450, 0 0.5em 0 0 #7abfe4;
+  transform: translate3d(0, 0.5em, -1em);
+}
+button.learn-more:active {
+  background: #7abfe4;
+  transform: translate(0em, 0.75em);
+}
+button.learn-more:active::before {
+  box-shadow: 0 0 0 2px #003450, 0 0 #7abfe4;
+  transform: translate3d(0, 0, -1em);
+}
+</style>
+
+
+<div class="hero-section" style="
+width: 100vw;
+    position: relative;
+    background-color: beige;
+    left: calc(-50vw + 50%);
+    margin-left: calc(-48vw + 50%);
+    inset: 0px 28.5px 0px -28.5px;
+    background-image: url(https://open.kaznu.kz/static/kaznu/images/header.png);
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    block-size: 352px;
+    border-block-color: rgb(51, 51, 51);
+    border-color: rgb(51, 51, 51);
+    border-inline-color: rgb(51, 51, 51);
+    box-sizing: border-box;
+    caret-color: rgb(51, 51, 51);
+    color: rgb(51, 51, 51);
+    column-rule-color: rgb(51, 51, 51);
+    font-family: Roboto, sans-serif;
+    height: 352px;
+    inset-block: 0px;
+    inset-inline: -28.5px 28.5px;
+    line-height: 22.8571px;
+    outline-color: rgb(51, 51, 51);
+    perspective-origin: 540px 176px;
+    text-decoration: none solid rgb(51, 51, 51);
+    text-size-adjust: 100%;
+    transform-origin: 540px 176px;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-in-out;
+    -webkit-locale: &#39;ru&#39;;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-text-emphasis-color: rgb(51, 51, 51);
+    -webkit-text-fill-color: rgb(51, 51, 51);
+    -webkit-text-stroke-color: rgb(51, 51, 51);
+">
+    <div class="header-content" style="
+text-align: -webkit-center;
+    vertical-align: middle;
+">
+        <div class="header-content-inner" style="
+-webkit-text-fill-color: rgb(255, 255, 255);
+">
+             <h1 class="h1-text" style="
+
+">${_('Competition for the selection of pedagogical scenarios of online courses')}</h1>
+<!--
+            <p class="p-text" style="block-size: 52px; border-block-color: rgb(0, 0, 0); border-color: rgb(0, 0, 0); border-inline-color: rgb(0, 0, 0); box-sizing: border-box; caret-color: rgb(51, 51, 51); color: rgb(0, 0, 0); column-rule-color: rgb(0, 0, 0); font-family: Roboto, sans-serif; font-size: 15px; height: 52px; inline-size: 900px; line-height: 26.25px; margin-block: 0px 10px; margin-bottom: 10px; margin-top: 0px; outline-color: rgb(0, 0, 0); perspective-origin: 450px 26px; text-align: justify; text-decoration: none solid rgb(51, 51, 51); text-size-adjust: 100%; transform-origin: 450px 26px; transition-duration: 0.3s; transition-timing-function: ease-in-out; width: 900px; -webkit-locale: &quot;ru&quot;; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); -webkit-text-emphasis-color: rgb(51, 51, 51); -webkit-text-fill-color: rgb(51, 51, 51); -webkit-text-stroke-color: rgb(0, 0, 0);">Казахский национальный университет им. аль-Фараби является лидером среди казахстанских университетов по внедрению MOOК на открытой платформе Open edX.</p>
+-->
+        </div>
+    </div>
+</div>
+<br>
+<h2><strong>${_('About the contest')}&nbsp;</strong></h2>
+
+<p>
+${_('The Office of Academic and Digital Innovation accepts applications for participation in the competition of pedagogical scenarios for the creation and publication of online courses (MOOC/SPOC).')}
+</p>
+<p>
+${_('The competition can be attended by both creative teams of structural divisions of the university, and individual pedagogical or scientific workers of the University.')}
+
+${_('According to the results of the competition, the commission will be allowed to develop and issued 10 MOOCs and 10 SPOCs.')}
+</p>
+<p>${_('The competition is held in the following order:')}</p>
+
+
+
+<style>
+body {
+  font-family: "Open Sans", sans-serif;
+  margin: 0;
+  padding: 0 4em;
+}
+
+main {
+  min-width: 300px;
+  max-width: 500px;
+  margin: auto;
+}
+
+#step {
+  font-size: 1em;
+  line-height: 1.75em;
+  border-top: 3px solid;
+  -o-border-image: linear-gradient(to right, #4195cb 0%, #c3deef 100%);
+     border-image: linear-gradient(to right, #4195cb 0%, #c3deef 100%);
+  border-image-slice: 1;
+  border-width: 3px;
+  margin: 0;
+  padding: 40px;
+  counter-increment: section;
+  position: relative;
+  color: #34435E;
+}
+#step:before {
+  content: counter(section);
+  position: absolute;
+  border-radius: 50%;
+  padding: 10px;
+  height: 2.25em;
+  width: 2.25em;
+  background-color: #34435E;
+  text-align: center;
+  line-height: 1.25em;
+  color: #ffffff;
+  font-size: 1em;
+}
+
+#step:nth-child(odd) {
+  border-right: 3px solid;
+  padding-left: 0;
+}
+#step:nth-child(odd):before {
+  left: 100%;
+  margin-left: -15px;
+}
+
+#step:nth-child(even) {
+  border-left: 3px solid;
+  padding-right: 0;
+}
+#step:nth-child(even):before {
+  right: 100%;
+  margin-right: -20px;
+}
+
+#step:first-child {
+  border-top: 0;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+}
+
+#step:last-child {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+</style>
+
+
+<main>
+  <div id="step">
+${_('Stage 1 - registration and submission of applications until {str}').format(str='14.02.2022')}
+</div>
+  <div id="step">
+${_('Stage 2 - public defense of pedagogical scenarios of online courses until {str}').format(str='04.03.2022')}
+</div>
+  <div id="step">
+${_('Stage 3 - examination of applications for compliance with the requirements for the content, technology and methodology of the development of pedagogical scenarios, determination of winners by the decision of the competition commission by {str}').format(str='14.03.2022')}
+</div>
+  <div id="step">
+${_('Stage 4 - approval of the results of the competition by {str}').format(str='18.03.2022')} 
+</div>
+<!--  <div id="step">5-этап. Утверждение результатов конкурса.</div> -->
+</main>
+
+## <!-- ${_('its a {str}').format(str='book')} -->
+
+
+
+<h2 style="text-align: center;"><strong>${_('Requirements for the form and content of the application')}</strong></h2>
+      
+   
+
+<style>
+.col-sm {
+/*background-color: antiquewhite;*/
+text-align: center;
+/*border: 1px solid;*/
+padding-bottom: 12px;
+}
+.fal {
+font-size: 89px;
+color: #4195cb;
+padding-bottom: 9px;
+padding-top: 9px;
+text-shadow: 1px 1px 3px #214a65;
+}
+.tile {
+text-align: center;
+/*background-color: #88afd6;*/
+}
+.h1-text {
+font-size:50px;
+}
+
+
+
+</style>
+
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+	<div class="tile">
+	<i class="fal fa-file-alt" ></i>
+	</div>
+      ${_('Cover letter')} <a href="https://docs.google.com/document/d/1YZKT5y43JCWOJn28OYMGgIe-TZxbaAUC/edit?usp=sharing&ouid=104459189082100162823&rtpof=true&sd=true" target="_blank">${_('rus')}</a>
+      <a href="https://docs.google.com/document/d/1QxbmtiyHUA6ORq06aedGYnngowx76rnU/edit?usp=sharing&ouid=104459189082100162823&rtpof=true&sd=true"  target="_blank">${_('kaz')}</a>
+    </div>
+	
+    <div class="col-sm">
+		<div class="tile">
+	<i class="fal fa-book-open" ></i>
+		</div>
+${_('Pedagogical scenario of the online course')}
+      <a href="https://drive.google.com/file/d/1jAJaHDkqiudUXmhtGfx7KZSOfvznM4VM/view?usp=sharing"  target="_blank">${_('rus')}</a>
+      <a href="https://drive.google.com/file/d/1ZSkjOXskQtap_uLEnmDpHXzoVxK_t_W6/view?usp=sharing"  target="_blank">${_('kaz')}</a>
+    </div>
+    <div class="col-sm">
+		<div class="tile">
+	<i class="fal fa-file-video" ></i>
+		</div>
+${_('Link to a video recording of one lecture')}
+      <a href="https://open.kaznu.kz/media/lecture.docx"  target="_blank">рус</a>
+<!--
+      <a href=""  target="_blank">каз</a>
+-->
+    </div>
+	    <div class="col-sm">
+	<div class="tile">	
+	<i class="fal fa-certificate" ></i>
+	</div>
+      ${_('Link to the online course certificate')} " ${_('Theory and practice of creating an online course')} "
+      <a href="https://drive.google.com/file/d/1CVWOG3n2j9CyaKYTIIXK5MgiYCvfPkzR/view?usp=sharing"  target="_blank">${_('rus')}</a>
+    </div>
+	 <div class="col-sm">
+	 <div class="tile">
+	 <i class="fal fa-chalkboard-teacher" ></i>
+	 </div>
+${_('Information about the authors of the online course')}
+      <a href="https://drive.google.com/file/d/1JKOfq5Co4kYGQKZzrbKvSBh5NoN0ow3r/view?usp=sharing"  target="_blank">${_('rus')}</a>
+      <a href="https://drive.google.com/file/d/1k774Wj0sDbMY7crijb7SLz6LGuydrhS4/view?usp=sharing"  target="_blank">${_('kaz')}</a>
+    </div>
+  </div>
+</div>    
+
+<p>${_('Submit an application')}</p>
+<a target="_blank" style="color: #fff;  text-decoration: none;" href="https://docs.google.com/forms/d/e/1FAIpQLSdi76ZguNl7yr0XX4GR7r7NIkuvfkHSL0u5Xt5E4S33R-sx9Q/viewform?usp=sf_link">
+<button class="learn-more">
+${_('Fill out the form')}
+</button>
+</a>
+
+<!--
+<a href="https://docs.google.com/forms/d/e/1FAIpQLSekBgAqtwKI6RNhDx3zyeMB9ZJor7NmJgv6Gr3-Cbzx0R9yLw/viewform?usp=sf_link">
+https://docs.google.com/forms/d/e/1FAIpQLSekBgAqtwKI6RNhDx3zyeMB9ZJor7NmJgv6Gr3-Cbzx0R9yLw/viewform?usp=sf_link </a>
+-->
+<br> <br>
+
+<p style="
+    margin-top: 15px;
+">
+${_('For all questions, please contact the Office of Academic and Digital Innovation: building - rectorate, office {room}, phone {str}.').format(room='207', str='+7 727 377 33 33 (11-33, 32-16, 16-47, 33-81, 14-70)')}
+</p>
+
+
+
+
+
+

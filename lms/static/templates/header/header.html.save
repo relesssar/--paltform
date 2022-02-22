@@ -1,0 +1,1177 @@
+## mako
+
+<%page expression_filter="h" args="online_help_token, use_cookie_banner=False"/>
+
+<%namespace name='static' file='../static_content.html'/>
+<%namespace file='../main.html' import="login_query"/>
+<%!
+from django.urls import reverse
+from django.utils.translation import ugettext as _
+import waffle
+
+from lms.djangoapps.ccx.overrides import get_current_ccx
+from openedx.core.djangolib.markup import HTML, Text
+
+# App that handles subdomain specific branding
+from branding import api as branding_api
+from openedx.core.djangoapps.lang_pref.api import header_language_selector_is_enabled, released_languages
+from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
+
+%>
+## Warning !!!
+
+<style>
+.alert {
+  padding: 20px;
+  background-color: #f44336;
+  color: white;
+}
+
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.closebtn:hover {
+  color: black;
+}
+.static-container {
+max-width: 1155px !important;
+}
+.content-wrapper {
+    max-width: 1155px;
+    margin: 0 auto;
+}
+
+</style>
+
+<!--
+<div class="alert">
+  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+  <strong>Внимание!</strong> Ведутся технические работы на сайте. Возможна некорректная работа. Приносим извинения за временные неудобства
+</div>
+-->
+
+## Provide a hook for themes to inject branding on top.
+<%block name="navigation_top" />
+
+<style>
+* {
+transition: unset !important;
+}
+header.global {
+    /*border-bottom: 1px solid #919191;*/
+    /*box-shadow: 0 1px 5px 0 rgba(0,0,0,0.1);*/
+    background: rgba(255,255,255,0.75);
+    position: relative;
+    width: 100%;
+    height: 76px;
+}
+header.global nav {
+    height: 40px;
+    margin: 0 auto;
+    padding: 18px 10px 0;
+    max-width: 1180px;
+	}
+header.global h1.logo {
+    float: left;
+    margin: -2px 39px 0 0;
+    position: relative;
+}
+header.global h1.logo a {
+    display: block;
+}
+header.global .nav-global {
+    margin-top: 10px;
+    list-style: none;
+    float: left;
+}
+header.global .nav-global li, header.global .nav-global div {
+    display: inline-block;
+    margin: 0 21px 0 0;
+    font-size: 0.875em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0 !important;
+}
+header.global .nav-global li a, header.global .nav-global div a {
+    display: block;
+    padding: 5px;
+    color: #45a0de;
+    font-weight: 600;
+}
+header.global .nav-courseware {
+    float: right;
+    margin-top: 5px;
+    list-style: none;
+}
+
+header.global .nav-courseware li .cta, header.global .nav-courseware div .cta, .login .form-actions button[type="submit"], .register .form-actions button[type="submit"], .passwordreset .form-actions button[type="submit"], #forgot-password-modal #password-reset .form-actions button[type="submit"], .view-survey .action-primary {
+    box-shadow: 0 2px 1px 0 none;
+    background: #45a0de;
+    color: #f2f2f2;
+}
+header.global .nav-courseware li .cta, header.global .nav-courseware div .cta, .login .form-actions button[type="submit"], .register .form-actions button[type="submit"], .passwordreset .form-actions button[type="submit"], #forgot-password-modal #password-reset .form-actions button[type="submit"], .view-survey .action-primary {
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-shadow: none;
+    font-weight: 500;
+    letter-spacing: 0;
+}
+
+header.global nav:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+header.global .user {
+    float: right;
+    margin-top: 5px;
+    padding-left: 0;
+}
+header.global .user .dropdown {
+    font-size: 0.875em;
+    padding: 0 10px;
+    color: #2e2e2e;
+    border: none;
+    background: #fff;
+    box-shadow: none;
+    text-shadow: none;
+	margin-top: -10px;
+}
+.sr {
+    background: #fff;
+    color: #000;
+}
+.sr, .nav-contents, .nav-skip, .view-teams .page-header-search .search-label {
+    border: 0;
+    clip: rect(1px 1px 1px 1px);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+.fa {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transform: translate(0, 0);
+}
+.fa-sort-down:before, .fa-sort-desc:before {
+    content: "\f0dd";
+}
+header.global .user .dropdown-menu.expanded {
+    display: block;
+}
+header.global .user .dropdown-menu {
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.3);
+    border: 1px solid #c8c8c8;
+    display: none;
+    margin-top: 0;
+    padding: 5px 10px;
+    position: absolute;
+    right: 0px;
+    top: 37px;
+    min-width: 120px;
+    z-index: 3;
+}
+header.global .user .dropdown-menu::before {
+    background: transparent;
+    border-top: 6px solid #fcfcfc;
+    border-right: 6px solid #fcfcfc;
+    border-bottom: 6px solid transparent;
+    border-left: 6px solid transparent;
+    box-shadow: 1px 0 0 0 #c8c8c8, 0 -1px 0 0 #c8c8c8;
+    content: "";
+    display: block;
+    height: 0px;
+    position: absolute;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    right: 7px;
+    top: -5px;
+    width: 0px;
+}
+header.global .user .dropdown-menu li:first-child {
+    border: none;
+    box-shadow: none;
+}
+header.global .user .dropdown-menu li {
+    display: block;
+    border-top: 1px dotted #cbcbcb;
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.05);
+}
+header.global .user .dropdown-menu li>a {
+    border: 1px solid transparent;
+    border-radius: 3px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    color: #45a0de;
+    cursor: pointer;
+    display: block;
+    margin: 5px 0px;
+    overflow: hidden;
+    padding: 3px 5px 4px;
+    text-overflow: ellipsis;
+    -webkit-transition: padding 0.15s linear 0s;
+    -moz-transition: padding 0.15s linear 0s;
+    transition: padding 0.15s linear 0s;
+    white-space: nowrap;
+    width: 100%;
+}
+header.global .user>.primary {
+    display: block;
+    float: left;
+    margin: 0;
+    position: relative;
+}
+
+
+.dropbtn {
+  background-color: #45a0de;
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  padding: 7px;
+  font-size: inherit !important;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none !important;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  font-size: inherit;
+  text-align: left;
+  padding: 7px;
+width: max-content;
+}
+
+.dropdown-content a {
+  /*color: black;*/
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  border-bottom: 1px solid #45a0de;
+  /*font-size: initial !important;*/
+  font-size: large;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+  display: block  !important;
+}
+
+.dropdown:hover .dropbtn {
+  background-color: #347fb3;
+}
+.font-button {
+cursor: pointer;
+color: #45a0de;
+}
+ .fontbtn1 {
+font-size: 16px;
+}
+ .fontbtn2 {
+font-size: 21px;
+}
+.fontbtn3 {
+font-size: 25px;
+}
+/* mobile menu*/
+
+.site-navbar ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: none;
+}
+.site-navbar ul li a {
+  color: #fff;
+  padding: 20px;
+  display: block;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.site-navbar ul li a:hover {
+  background: rgba(255,255,255,.1);
+}
+
+/* navbar regular css end */
+
+
+/* nav-toggler css start */
+.nav-toggler {
+  border: 3px solid #fff;
+  padding: 5px;
+  background-color: transparent;
+  cursor: pointer;
+  height: 39px;
+  display: none;
+}
+.nav-toggler span, 
+.nav-toggler span:before, 
+.nav-toggler span:after {
+  width: 28px;
+  height: 3px;
+  background-color: #fff;
+  display: block;
+  transition: .3s;
+}
+.nav-toggler span:before {
+  content: '';
+  transform: translateY(-9px);
+}
+.nav-toggler span:after {
+  content: '';
+  transform: translateY(6px);
+}
+.nav-toggler.toggler-open span {
+  background-color: transparent;
+}
+.nav-toggler.toggler-open span:before {
+  transform: translateY(0px) rotate(45deg);
+}
+.nav-toggler.toggler-open span:after {
+  transform: translateY(-3px) rotate(-45deg);
+}
+/* nav-toggler css start */
+
+
+/* intro-area css start */
+.intro-area {
+  height: calc(100vh - 61px);
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #fff;
+}
+.intro-area h2 {
+  font-size: 50px;
+  font-weight: 300;
+  line-height: 50px;
+  margin-bottom: 25px;
+}
+.intro-area p {
+  font-size: 18px;
+}
+/* intro-area css end */
+
+.site-navbar {
+padding: 0 !important;
+}
+
+/* mobile breakpoint start */
+@media screen and (max-width: 819px) {
+
+padding: 0 !important;
+
+.content-wrapper {
+padding: 0 !important;
+}
+
+body {
+padding: 0 !important;
+}
+
+.fontsize {
+display: none !important;
+}
+
+.user {
+margin-top: 10px;
+
+}
+
+.settings-language-form {
+margin-top: 5px;
+}
+
+.header-content-inner {
+padding: 18px;
+}
+
+.p-text {
+text-align: center  !important;
+}
+  .navbar-area {
+   margin-top: -5px;
+   }
+  .nav-global-04, .nav-global-05, .cta-login, .authenticated {
+   display: none !important;
+   }
+  .cta {
+   background-color: unset !important;
+  }
+
+  /* navbar css for mobile start */
+  .nav-toggler{
+    display: block;
+    background-color: #ccc;
+  }
+
+  .site-navbar ul {
+    position: absolute;
+    width: 100%;
+    height: calc(100vh );
+    left: 0;
+    top: 76px;
+    flex-direction: column;
+    align-items: center;
+    border-top: 1px solid #444;
+    background-color: rgba(0,0,0,.75);
+    max-height: 0;
+    overflow: hidden;
+    transition: .3s;
+  }
+  .site-navbar ul li {
+    width: 100%;
+    text-align: center;
+  }
+  .site-navbar ul li a {
+    padding: 25px;
+  }
+  .site-navbar ul li a:hover {
+    background-color: rgba(255,255,255,.1);
+  }
+  .site-navbar ul.open {
+    z-index: 99;
+    max-height: 100vh;
+    overflow: visible;
+  }
+  .intro-area h2 {
+    font-size: 36px;
+    margin-bottom: 15px;
+  }  
+  /* navbar css for mobile end */
+}
+/* mobile breakpoint end */
+</style>
+
+<script type="text/javascript" >
+/**
+ * Ensuring collapsible and accessible components on multiple
+ * screen sizes for the responsive lms header.
+*/
+//$(document).ready(function() {
+//    // jQuery is loaded => print the version
+//    alert(jQuery.fn.jquery);
+//});
+
+$(document).ready(function() {
+	"use strict";
+	var dropdownMenuToggle = $(".dropdown");
+	var dropdownMenu = $(".dropdown-menu");
+	var menuItems = dropdownMenu.find("a");
+	dropdownMenuToggle.toggle(function() {
+		dropdownMenu.addClass("expanded").find("a").first().focus();
+		dropdownMenuToggle.addClass("active").attr("aria-expanded", "true")
+	}, function() {
+		dropdownMenu.removeClass("expanded");
+		dropdownMenuToggle.removeClass("active").attr("aria-expanded", "false").focus()
+	});
+	dropdownMenuToggle.on("keydown", function(event) {
+		if(event.which == 32) {
+			dropdownMenuToggle.click();
+			event.preventDefault()
+		}
+	});
+	dropdownMenu.on("keydown", function(event) {
+		catchKeyPress($(this), event)
+	});
+
+	function catchKeyPress(object, event) {
+		var focusedItem = jQuery(":focus");
+		var numberOfMenuItems = menuItems.length;
+		var focusedItemIndex = menuItems.index(focusedItem);
+		var itemToFocusIndex;
+		if(event.which == 32) {
+			dropdownMenuToggle.click();
+			event.preventDefault()
+		}
+		if(event.which == 27) {
+			dropdownMenuToggle.click();
+			event.preventDefault()
+		}
+		if(event.which == 38 || event.which == 9 && event.shiftKey) {
+			if(focusedItemIndex === 0) {
+				menuItems.last().focus()
+			} else {
+				itemToFocusIndex = focusedItemIndex - 1;
+				menuItems.get(itemToFocusIndex).focus()
+			}
+			event.preventDefault()
+		}
+		if(event.which == 40 || event.which == 9) {
+			if(focusedItemIndex == numberOfMenuItems - 1) {
+				menuItems.first().focus()
+			} else {
+				itemToFocusIndex = focusedItemIndex + 1;
+				menuItems.get(itemToFocusIndex).focus()
+			}
+			event.preventDefault()
+		}
+	}
+});
+
+function createMobileMenu() {
+    /**
+     * Dynamically create a mobile menu from all specified mobile links
+     * on the page.
+     */
+    'use strict';
+    $('.mobile-nav-item').each(function() {
+        var mobileNavItem = $(this).clone().addClass('mobile-nav-link');
+        mobileNavItem.removeAttr('role');
+        mobileNavItem.find('a').attr('role', 'menuitem');
+        // xss-lint: disable=javascript-jquery-append
+        $('.mobile-menu').append(mobileNavItem);
+    });
+}
+
+$(document).ready(function() {
+    'use strict';
+    var $hamburgerMenu;
+    var $mobileMenu;
+    // Toggling visibility for the user dropdown
+    $('.global-header .toggle-user-dropdown, .global-header .toggle-user-dropdown span').click(function(e) {
+        var $dropdownMenu = $('.global-header .nav-item .dropdown-user-menu');
+        var $userDropdown = $('.global-header .toggle-user-dropdown');
+        if ($dropdownMenu.is(':visible')) {
+            $dropdownMenu.addClass('hidden');
+            $userDropdown.attr('aria-expanded', 'false');
+        } else {
+            $dropdownMenu.removeClass('hidden');
+            $dropdownMenu.find('.dropdown-item')[0].focus();
+            $userDropdown.attr('aria-expanded', 'true');
+        }
+        $('.global-header .toggle-user-dropdown').toggleClass('open');
+        e.stopPropagation();
+    });
+
+    // Hide user dropdown on click away
+    if ($('.global-header .nav-item .dropdown-user-menu').length) {
+        $(window).click(function(e) {
+            var $dropdownMenu = $('.global-header .nav-item .dropdown-user-menu');
+            var $userDropdown = $('.global-header .toggle-user-dropdown');
+            if ($userDropdown.is(':visible') && !$(e.target).is('.dropdown-item, .toggle-user-dropdown')) {
+                $dropdownMenu.addClass('hidden');
+                $userDropdown.attr('aria-expanded', 'false');
+            }
+        });
+    }
+
+    // Toggling menu visibility with the hamburger menu
+    $('.global-header .hamburger-menu').click(function() {
+        $hamburgerMenu = $('.global-header .hamburger-menu');
+        $mobileMenu = $('.mobile-menu');
+        if ($mobileMenu.is(':visible')) {
+            $mobileMenu.addClass('hidden');
+            $hamburgerMenu.attr('aria-expanded', 'false');
+        } else {
+            $mobileMenu.removeClass('hidden');
+            $hamburgerMenu.attr('aria-expanded', 'true');
+        }
+        $hamburgerMenu.toggleClass('open');
+    });
+
+    // Hide hamburger menu if no nav items (sign in and register pages)
+    if ($('.mobile-nav-item').size() === 0) {
+        $('.global-header .hamburger-menu').addClass('hidden');
+    }
+
+    createMobileMenu();
+});
+
+
+// Accessibility keyboard controls for user dropdown and mobile menu
+$('.mobile-menu, .global-header').on('keydown', function(e) {
+    'use strict';
+    var isNext,
+        nextLink,
+        loopFirst,
+        loopLast,
+        $curTarget = $(e.target),
+        isLastItem = $curTarget.parent().is(':last-child'),
+        isToggle = $curTarget.hasClass('toggle-user-dropdown'),
+        isHamburgerMenu = $curTarget.hasClass('hamburger-menu'),
+        isMobileOption = $curTarget.parent().hasClass('mobile-nav-link'),
+        isDropdownOption = !isMobileOption && $curTarget.parent().hasClass('dropdown-item'),
+        $userDropdown = $('.global-header .user-dropdown'),
+        $hamburgerMenu = $('.global-header .hamburger-menu'),
+        $toggleUserDropdown = $('.global-header .toggle-user-dropdown');
+
+    // Open or close relevant menu on enter or space click and focus on first element.
+    if ((e.key === 'Enter' || e.key === 'Space') && (isToggle || isHamburgerMenu)) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        $curTarget.click();
+        if (isHamburgerMenu) {
+            if ($('.mobile-menu').is(':visible')) {
+                $hamburgerMenu.attr('aria-expanded', true);
+                $('.mobile-menu .mobile-nav-link a').first().focus();
+            } else {
+                $hamburgerMenu.attr('aria-expanded', false);
+            }
+        } else if (isToggle) {
+            if ($('.global-header .nav-item .dropdown-user-menu').is(':visible')) {
+                $userDropdown.attr('aria-expanded', 'true');
+                $('.global-header .dropdown-item a:first').focus();
+            } else {
+                $userDropdown.attr('aria-expanded', false);
+            }
+        }
+    }
+
+    // Enable arrow functionality within the menu.
+    if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && (isDropdownOption || isMobileOption ||
+        (isHamburgerMenu && $hamburgerMenu.hasClass('open')) || isToggle && $toggleUserDropdown.hasClass('open'))) {
+        isNext = e.key === 'ArrowDown';
+        if (isNext && !isHamburgerMenu && !isToggle && isLastItem) {
+            // Loop to the start from the final element
+            nextLink = isDropdownOption ? $toggleUserDropdown : $hamburgerMenu;
+        } else if (!isNext && (isHamburgerMenu || isToggle)) {
+            // Loop to the end when up arrow pressed from menu icon
+            nextLink = isHamburgerMenu ? $('.mobile-menu .mobile-nav-link a').last()
+                : $('.global-header .dropdown-user-menu .dropdown-nav-item').last().find('a');
+        } else if (isNext && (isHamburgerMenu || isToggle)) {
+            // Loop to the first element from the menu icon
+            nextLink = isHamburgerMenu ? $('.mobile-menu .mobile-nav-link a').first()
+                : $('.global-header .dropdown-user-menu .dropdown-nav-item').first().find('a');
+        } else {
+            // Loop up to the menu icon if first element in menu
+            if (!isNext && $curTarget.parent().is(':first-child') && !isHamburgerMenu && !isToggle) {
+                nextLink = isDropdownOption ? $toggleUserDropdown : $hamburgerMenu;
+            } else {
+                nextLink = isNext ?
+                    $curTarget.parent().next().find('a') : // eslint-disable-line newline-per-chained-call
+                    $curTarget.parent().prev().find('a'); // eslint-disable-line newline-per-chained-call
+            }
+        }
+        nextLink.focus();
+
+        // Don't let the screen scroll on navigation
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    // Escape clears out of the menu
+    if (e.key === 'Escape' && (isDropdownOption || isHamburgerMenu || isMobileOption || isToggle)) {
+        if (isDropdownOption || isToggle) {
+            $('.global-header .nav-item .dropdown-user-menu').addClass('hidden');
+            $toggleUserDropdown.focus()
+                .attr('aria-expanded', 'false');
+            $('.global-header .toggle-user-dropdown').removeClass('open');
+        } else {
+            $('.mobile-menu').addClass('hidden');
+            $hamburgerMenu.focus()
+                .attr('aria-expanded', 'false')
+                .removeClass('open');
+        }
+    }
+
+    // Loop when tabbing and using arrows
+    if ((e.key === 'Tab') && ((isDropdownOption && isLastItem) || (isMobileOption && isLastItem) || (isHamburgerMenu
+        && $hamburgerMenu.hasClass('open')) || (isToggle && $toggleUserDropdown.hasClass('open')))) {
+        nextLink = null;
+        loopFirst = isLastItem && !e.shiftKey && !isHamburgerMenu && !isToggle;
+        loopLast = (isHamburgerMenu || isToggle) && e.shiftKey;
+        if (!(loopFirst || loopLast)) {
+            return;
+        }
+        e.preventDefault();
+        if (isDropdownOption || isToggle) {
+            nextLink = loopFirst ? $toggleUserDropdown :
+                $('.global-header .dropdown-user-menu .dropdown-nav-item a').last();
+        } else {
+            nextLink = loopFirst ? $hamburgerMenu : $('.mobile-menu .mobile-nav-link a').last();
+        }
+        nextLink.focus();
+    }
+});
+
+</script>
+
+## Add UI Toolkit components if using the Pattern Library
+% if uses_pattern_library:
+    <%block name="js_extra">
+    <%static:require_module module_name="js/header_factory" class_name="HeaderFactory">
+    HeaderFactory();
+    </%static:require_module>
+    </%block>
+% endif
+
+<%
+  unsupported_browser_alert_versions = configuration_helpers.get_value('UNSUPPORTED_BROWSER_ALERT_VERSIONS', settings.FEATURES.get('UNSUPPORTED_BROWSER_ALERT_VERSIONS'))
+%>
+% if waffle.switch_is_active('enable_unsupported_browser_alert'):
+  <script>
+    var $buoop = {
+        notify:${unsupported_browser_alert_versions | n, decode.utf8},
+        api:5,
+        reminder:0
+    };
+    function $buo_f() {
+        var e = document.createElement("script");
+        e.src = "//browser-update.org/update.min.js";
+        document.body.appendChild(e);
+    };
+    try {document.addEventListener("DOMContentLoaded", $buo_f,false)}
+    catch(e){window.attachEvent("onload", $buo_f)}
+  </script>
+% endif
+
+
+<header id="global-navigation" class="global ${"slim" if course else ""}" >
+    <nav class="nav-wrapper" aria-label="${_('Global')}" >
+    <h1 class="logo" style="line-height:0%">
+      <a href="${marketing_link('ROOT')}" style="text-decoration: none">
+        ##<%block name="navigation_logo">           
+        ##</%block>
+		<img src="/static/kaznu/images/logo.png" height="55" alt="logo">
+      </a>
+    </h1>
+
+   % if course:
+
+
+      <%
+        display_name = course.display_name_with_default
+        if settings.FEATURES.get('CUSTOM_COURSES_EDX', False):
+          ccx = get_current_ccx(course.id)
+          if ccx:
+            display_name = ccx.display_name
+      %>
+      
+    % endif
+
+
+    <ol class="right nav-courseware">
+    <li class="nav-courseware-01">
+
+  <div class="navbar-area">
+      <nav class="site-navbar">
+
+        <ul>
+ % if user.is_authenticated():
+  <li> <a href="${marketing_link('COURSES')}">${_('Find Courses')}</a> </li>
+
+<li>
+<span onclick="font1()" style="" class="font-button fontbtn1">A</span>
+<span onclick="font2()" style="" class="font-button fontbtn2">A</span>
+<span onclick="font3()" style="" class="font-button fontbtn3">A</span>
+</li>
+
+
+ % else:
+  <li> <a class="cta cta-register" href="/register${login_query()}">${_("Register")}</a> </li>
+  <li> <a class="cta cta-discovery" href="/courses">${_("Find Courses")}</a> </li>
+  <li> <a class="cta cta-register" href="/competition">${_('MOOC Competition')}</a> </li>
+  <li> <a class="cta cta-register" href="/catalog">${_('Integration of MOOCs into LP')}</a> </li>
+  <li> <a class="cta cta-register" href="/authors">${_('For authors/developers')}</a> </li>
+
+<li>
+<a class="cta cta-login" style="display: block !important;" href="/login${login_query()}">${_("Sign in")}</a>
+</li>
+
+<li>
+</li>
+
+<li>
+<span onclick="font1()" style="" class="font-button fontbtn1">A</span>
+<span onclick="font2()" style="" class="font-button fontbtn2">A</span>
+<span onclick="font3()" style="" class="font-button fontbtn3">A</span>
+</li>
+
+ % endif
+
+       </ul>
+
+        <button class="nav-toggler">
+          <span></span>
+        </button>
+      </nav>
+  </div>
+
+    </li>
+    </ol>
+
+
+    % if user.is_authenticated():
+    <ol class="left nav-global authenticated">
+      <%block name="navigation_global_links_authenticated">
+        % if settings.FEATURES.get('COURSES_ARE_BROWSABLE'):
+          <li class="nav-global-01">
+            <a href="${marketing_link('COURSES')}">${_('Find Courses')}</a>
+          </li>
+        % endif
+        %if settings.FEATURES.get('ENABLE_SYSADMIN_DASHBOARD','') and user.is_staff:
+          <li>
+            ## Translators: This is short for "System administration".
+            <a href="${reverse('sysadmin')}">${_("Sysadmin")}</a>
+          </li>
+        %endif
+      </%block>
+    </ol>
+	
+	% if header_language_selector_is_enabled():
+    <% languages = released_languages() %>
+    % if len(languages) > 1:
+        <form action="/i18n/setlang/" method="post" class="settings-language-form" id="language-settings-form" style="padding: 2px;">
+            <input type="hidden" id="csrf_token" name="csrfmiddlewaretoken" value="${csrf_token}" >
+            % if user.is_authenticated:
+                <input title="preference api" type="hidden" class="url-endpoint" value="${reverse('preferences_api', kwargs={'username': user.username})}" data-user-is-authenticated="true">
+            % else:
+                <input title="session update url" type="hidden" class="url-endpoint" value="${reverse('session_language')}" data-user-is-authenticated="false">
+            % endif
+            <label><span class="sr">${_("Choose Language")}</span>
+            <select class="input select language-selector" id="settings-language-value" name="language" style="font-size: 14px;font-style: normal;">
+                % for language in languages:
+                    % if language[0] == LANGUAGE_CODE:
+                        <option value="${language[0]}" selected="selected">${language[1]}</option>
+                    % else:
+                        <option value="${language[0]}" >${language[1]}</option>
+                    % endif
+                % endfor
+            </select>
+            </label>
+        </form>
+    % endif
+% endif
+	
+	
+    <ol class="user">
+      <li class="primary">
+
+        <a href="${reverse('dashboard')}" class="user-link">
+          <span class="sr">${_("Dashboard for:")}</span>
+          <div>
+          ${user.username}
+          </div>
+        </a>
+      </li>
+      <li class="primary" style="position: relative; display: inline-block;">
+        <button class="dropdown" aria-haspopup="true" aria-expanded="false"><span class="sr">${_("More options dropdown")}</span><span class="fa fa-sort-desc" aria-hidden="true"></span></button>
+        <ul class="dropdown-menu" aria-label="More Options" role="menu">
+          <%block name="navigation_dropdown_menu_links" >
+            <li><a href="${reverse('dashboard')}">${_("Dashboard")}</a></li>
+            <li><a href="${reverse('learner_profile', kwargs={'username': user.username})}">${_("Profile")}</a></li>
+            <li><a href="${reverse('account_settings')}">${_("Account")}</a></li>
+          </%block>
+          <li><a href="${reverse('logout')}" role="menuitem">${_("Sign Out")}</a></li>
+        </ul>
+      </li>
+    </ol>
+      % if should_display_shopping_cart_func() and not (course and microsite.is_request_in_microsite()): # see shoppingcart.context_processor.user_has_cart_context_processor
+        <ol class="user">
+          <li class="primary">
+            <a class="shopping-cart" href="${reverse('shoppingcart.views.show_cart')}">
+              <i class="icon fa fa-shopping-cart"></i> ${_("Shopping Cart")}
+            </a>
+          </li>
+        </ol>
+      % endif
+    % else:
+    <ol class="left nav-global">
+
+      % if not settings.FEATURES['DISABLE_LOGIN_BUTTON']:
+          % if settings.FEATURES.get('ENABLE_COURSE_DISCOVERY'):
+          <li class="nav-global-05">
+            <a class="cta cta-discovery" href="/courses">${_("Find Courses")}</a>
+          </li>
+          %endif
+          % if course and settings.FEATURES.get('RESTRICT_ENROLL_BY_REG_METHOD') and course.enrollment_domain:
+          <li class="nav-global-04">
+            <a class="cta cta-register" href="${reverse('course-specific-register', args=[course.id.to_deprecated_string()])}">${_("Register")}</a>
+          </li>
+          % else:
+          <li class="nav-global-04">
+            <a class="cta cta-register" href="/register${login_query()}">${_("Register")}</a>
+          </li>
+          <li class="nav-global-05">
+            <a class="cta cta-discovery" href="/courses">${_("Find Courses")}</a>
+          </li>
+          % endif
+
+
+          <li class="nav-global-04">
+            
+<div class="dropdown">
+  <div class="dropbtn">${_('Menu')}</div>
+  <div class="dropdown-content">
+  <a class="cta cta-register" onclick='window.location.href="/competition"'  href="/competition">${_('MOOC Competition')}</a>
+  <a class="cta cta-register" onclick='window.location.href="/catalog"'  href="/catalog">${_('Integration of MOOCs into LP')}</a>
+  <a class="cta cta-register" onclick='window.location.href="/authors"'  href="/authors">${_('For authors/developers')}</a>
+  </div>
+</div>
+            
+          </li>
+
+<!--
+          <li class="nav-global-04">
+            <a class="cta cta-register" href="/competition">Конкурс МООК</a>
+          </li>
+
+          <li class="nav-global-04">
+            <a class="cta cta-register" href="/catalog">Интеграция МООК в ОП</a>
+          </li>
+          <li class="nav-global-04">
+            <a class="cta cta-register" href="/authors">Авторам/разработчикам</a>
+          </li>
+-->
+
+      % endif
+    </ol>
+
+    <ol class="right nav-courseware">
+    <li class="nav-courseware-01">
+      % if not settings.FEATURES['DISABLE_LOGIN_BUTTON']:
+          % if course and settings.FEATURES.get('RESTRICT_ENROLL_BY_REG_METHOD') and course.enrollment_domain:
+          <a class="cta cta-login" href="${reverse('course-specific-login', args=[course.id.to_deprecated_string()])}${login_query()}">${_("Sign in")}</a>
+          % else:
+          <a class="cta cta-login" href="/login${login_query()}">${_("Sign in")}</a>
+          % endif
+      % endif
+    </li>
+    </ol>
+    % endif
+
+
+
+        <ol class="right nav-courseware fontsize" style="margin-top: 0;" >
+    <li class="nav-courseware-01" style="color: black; margin-right: 20px;">
+
+<span onclick="font1()" style="" class="font-button fontbtn1">A</span> 
+<span onclick="font2()" style="" class="font-button fontbtn2">A</span> 
+<span onclick="font3()" style="" class="font-button fontbtn3">A</span>
+    </li>
+    </ol>
+
+
+    <ol class="right nav-courseware" >
+     <li class="nav-courseware-01" style="color: black; margin-right: 20px;">
+
+   % if not user.is_authenticated():
+    <% languages = released_languages() %>
+    % if len(languages) > 1:
+        <form action="/i18n/setlang/" method="post" class="settings-language-form" id="language-settings-form" style="padding: 2px;">
+            <input type="hidden" id="csrf_token" name="csrfmiddlewaretoken" value="${csrf_token}" >
+            % if user.is_authenticated:
+                <input title="preference api" type="hidden" class="url-endpoint" value="${reverse('preferences_api', kwargs={'username': user.username})}" data-user-is-authenticated="true">
+            % else:
+                <input title="session update url" type="hidden" class="url-endpoint" value="${reverse('session_language')}" data-user-is-authenticated="false">
+            % endif
+            <label><span class="sr">${_("Choose Language")}</span>
+            <select class="input select language-selector" id="settings-language-value" name="language"  style="font-size: 14px;font-style: normal;">
+                % for language in languages:
+                    % if language[0] == LANGUAGE_CODE:
+                        <option value="${language[0]}" selected="selected">${language[1]}</option>
+                    % else:
+                        <option value="${language[0]}" >${language[1]}</option>
+                    % endif
+                % endfor
+            </select>
+            </label>
+        </form>
+    % endif
+   % endif
+     </li>
+    </ol>
+
+
+
+
+
+
+
+
+
+  </nav>
+</header>
+
+% if course:
+<!--[if lte IE 9]>
+<div class="ie-banner" aria-hidden="true">${Text(_('{begin_strong}Warning:{end_strong} Your browser is not fully supported. We strongly recommend using {chrome_link} or {ff_link}.')).format(
+    begin_strong=HTML('<strong>'),
+    end_strong=HTML('</strong>'),
+    chrome_link=HTML('<a href="https://www.google.com/chrome" rel="noopener" target="_blank">Chrome</a>'),
+    ff_link=HTML('<a href="http://www.mozilla.org/firefox" rel="noopener" target="_blank">Firefox</a>'),
+)}</div>
+<![endif]-->
+% endif
+
+% if settings.FEATURES.get('ENABLE_COOKIE_CONSENT', False):
+  <%include file="../widgets/cookie-consent.html" />
+% endif
+
+
+
+
+    <script type="text/javascript">
+/*        $(function () {
+            $(".font-button").bind("click", function () {
+                var size = parseInt($('body').css("font-size"));
+                if ($(this).hasClass("plus")) {
+                    size = size + 2;
+                } else {
+                    size = size - 2;
+                    if (size <= 10) {
+                        size = 10;
+                    }
+                }
+                $('body').css("font-size", size);
+            });
+        });
+*/
+var countfont = 0;
+function fontplus() {
+//var bod = document.body;
+//var siz = parseInt($('body').css("font-size")) ;
+
+//siz = siz + 2;
+//alert(siz);
+//$('body').css("font-size", parseInt($('body').css("font-size")) + 2);
+//$('h2').css("font-size", parseInt($('h2').css("font-size")) + 2);
+
+if (countfont <= 6 ) {
+fontsize(2);
+countfont++;
+}
+
+}
+
+function fontminus() {
+
+
+if (countfont >= 1 ) {
+fontsize(-2);
+countfont--;
+}
+
+
+}
+
+function fontsize(incr) {
+$('body').css("font-size", parseInt($('body').css("font-size")) + incr);
+$('h2').css("font-size", parseInt($('h2').css("font-size")) + incr);
+$('h1').css("font-size", parseInt($('h1').css("font-size")) + incr);
+$('h3').css("font-size", parseInt($('h3').css("font-size")) + incr);
+$('h4').css("font-size", parseInt($('h4').css("font-size")) + incr);
+$('p').css("font-size", parseInt($('p').css("font-size")) + incr);
+$('.fontbtn1').css("font-size", parseInt($('.fontbtn1').css("font-size")) + incr);
+$('.fontbtn2').css("font-size", parseInt($('.fontbtn2').css("font-size")) + incr);
+$('.fontbtn3').css("font-size", parseInt($('.fontbtn3').css("font-size")) + incr);
+$('.course-title').css("font-size", parseInt($('.course-title').css("font-size")) + incr);
+$('.course-organization').css("font-size", parseInt($('.course-organization').css("font-size")) + incr);
+$('.course-date').css("font-size", parseInt($('.course-date').css("font-size")) + incr);
+
+
+//$('span').css("font-size", parseInt($('span').css("font-size")) + incr);
+//$('.h1-text').css("font-size", parseInt($('.h1-text').css("font-size")) + incr);
+//$('.service-heading').css("font-size", parseInt($('.service-heading').css("font-size")) + incr);
+//$('.dropbtn').css("font-size", parseInt($('.dropbtn').css("font-size")) + incr);
+//$('a').css("font-size", parseInt($('a').css("font-size")) + incr);
+}
+
+var fontinc1 = 4;
+var fontinc2 = 8;
+
+function font1() {
+if (countfont == 1 ) {
+fontsize(-fontinc1);
+}
+if (countfont == 2 ) {
+fontsize(-fontinc2);
+}
+countfont=0;
+}
+
+function font2() {
+console.log(countfont);
+if (countfont == 0 ) {
+fontsize(4);
+}
+if (countfont == 2 ) {
+fontsize(-fontinc1);
+}
+countfont=1;
+}
+
+function font3() {
+console.log(countfont);
+if (countfont == 0 ) {
+fontsize(fontinc2);
+}
+if (countfont == 1 ) {
+fontsize(fontinc1);
+}
+countfont=2;
+}
+
+    </script>
+ <script>
+// define all UI variable
+const navToggler = document.querySelector('.nav-toggler');
+const navMenu = document.querySelector('.site-navbar ul');
+const navLinks = document.querySelectorAll('.site-navbar a');
+
+// load all event listners
+allEventListners();
+
+// functions of all event listners
+function allEventListners() {
+  // toggler icon click event
+  navToggler.addEventListener('click', togglerClick);
+  // nav links click event
+  navLinks.forEach( elem => elem.addEventListener('click', navLinkClick));
+
+}
+
+// togglerClick function
+function togglerClick() {
+
+  navToggler.classList.toggle('toggler-open');
+  navMenu.classList.toggle('open');
+  navMenu.style.display = 'flex';
+  if (!navMenu.classList.contains('open')) {
+  	navMenu.style.display = 'none';
+  }
+}
+
+// navLinkClick function
+function navLinkClick() {
+  if(navMenu.classList.contains('open')) {
+    navToggler.click();
+  }
+}
+
+ </script>

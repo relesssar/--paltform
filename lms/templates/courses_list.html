@@ -1,0 +1,73 @@
+<%page expression_filter="h"/>
+<%namespace name='static' file='static_content.html'/>
+<%!
+   from django.utils.translation import ugettext as _ 
+   from datetime import datetime
+%>
+
+<section class="courses-container">
+  <section class="highlighted-courses">
+##1
+##${len(courses)}
+    % if settings.FEATURES.get('COURSES_ARE_BROWSABLE'):
+      <section class="courses">
+        <ul class="journal-list">
+          % for bundle in journal_info.get('journal_bundles'):
+          <li class="courses-listing-item">
+            <%include file="journals/bundle_card.html" args="bundle=bundle"/>
+          </li>
+          % endfor
+        </ul>
+        <ul class="journal-list">
+          %for journal in journal_info.get('journals'):
+          <li class="courses-listing-item">
+          </li>
+          %endfor
+        </ul>
+
+##<div id="test2" style="display:none">
+<%
+course_sort = []
+for course in courses:
+    #course_sort.append({course:course.start.strftime('%Y-%m-%d')})
+    course_sort.append({'id':course,'date':course.start.strftime('%Y-%m-%d')})
+endfor
+%>
+
+<%
+sortedArray = sorted(
+    course_sort,
+    key=lambda x: datetime.strptime(x['date'], '%Y-%m-%d'), reverse=True
+)
+%>
+
+##course_sort:<br>
+##${sortedArray}
+##<br>
+##</div>
+        <ul class="courses-listing">
+          ## limiting the course number by using HOMEPAGE_COURSE_MAX as the maximum number of courses
+
+          ## sorting by start date of course
+
+         % for course_sort in sortedArray: 
+          %for course in courses[:homepage_course_max]:
+          % if (course_sort['id'] == course):
+              <li class="courses-listing-item">
+                  <%include file="course.html" args="course=course" />
+              </li>
+          %endif
+          %endfor
+         %endfor 
+        </ul>
+      </section>
+    ## in case there are courses that are not shown on the homepage, a 'View all Courses' link should appear
+      % if homepage_course_max and len(courses) > homepage_course_max:
+      <div class="courses-more">
+        <a class="courses-more-cta" href="${marketing_link('COURSES')}"> ${_("View all Courses")} </a>
+      </div>
+    % endif
+    % endif
+
+  </section>
+</section>

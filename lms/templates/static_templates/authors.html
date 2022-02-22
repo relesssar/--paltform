@@ -1,0 +1,603 @@
+<%! from django.utils.translation import ugettext as _ 
+import coursecreate.views as coursecreateview
+%>
+<%inherit file="/main.html" />
+<link rel="stylesheet" type="text/css" href="/static/kaznu/css/all.css">
+<link rel="stylesheet" type="text/css" href="/static/css/bootstrap.4.1.3.min.css">
+
+<script>
+var cssId = 'myCss';  // you could encode the css path itself to generate id..
+if (!document.getElementById(cssId))
+{
+    var head  = document.getElementsByTagName('head')[0];
+    var link  = document.createElement('link');
+    link.id   = cssId;
+    link.rel  = 'stylesheet';
+    link.type = 'text/css';
+    link.href = '/static/kaznu/css/all.css';
+    link.media = 'all';
+    head.appendChild(link);
+}
+</script>
+
+<style>
+p {
+/*text-align:justify;*/
+}
+.h1-text {
+font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+h2 {
+font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+.main-container {
+text-align: center;
+}
+
+
+button {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  border: 0;
+  vertical-align: middle;
+  text-decoration: none;
+  font-size: inherit;
+  font-family: inherit;
+}
+button.learn-more {
+  font-weight: 600;
+  color: #fff;
+  text-transform: uppercase;
+  padding: 1.25em 2em;
+  background: #0075b4;
+  border: 2px solid #003450;
+  border-radius: 0.75em;
+  transform-style: preserve-3d;
+  transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), background 150ms cubic-bezier(0, 0, 0.58, 1);
+}
+button.learn-more::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #2889bd;
+  border-radius: inherit;
+  box-shadow: 0 0 0 2px #003450, 0 0.625em 0 0 #e2e2e2;
+  transform: translate3d(0, 0.75em, -1em);
+  transition: transform 150ms cubic-bezier(0, 0, 0.58, 1), box-shadow 150ms cubic-bezier(0, 0, 0.58, 1);
+}
+button.learn-more:hover {
+  background: #7abfe4;
+  transform: translate(0, 0.25em);
+}
+button.learn-more:hover::before {
+  box-shadow: 0 0 0 2px #003450, 0 0.5em 0 0 #7abfe4;
+  transform: translate3d(0, 0.5em, -1em);
+}
+button.learn-more:active {
+  background: #7abfe4;
+  transform: translate(0em, 0.75em);
+}
+button.learn-more:active::before {
+  box-shadow: 0 0 0 2px #003450, 0 0 #7abfe4;
+  transform: translate3d(0, 0, -1em);
+}
+</style>
+
+
+<div class="hero-section" style="
+width: 100vw;
+    position: relative;
+    background-color: beige;
+    left: calc(-50vw + 50%);
+    margin-left: calc(-48vw + 50%);
+    inset: 0px 28.5px 0px -28.5px;
+    background-image: url(https://open.kaznu.kz/static/kaznu/images/header.png);
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    block-size: 352px;
+    border-block-color: rgb(51, 51, 51);
+    border-color: rgb(51, 51, 51);
+    border-inline-color: rgb(51, 51, 51);
+    box-sizing: border-box;
+    caret-color: rgb(51, 51, 51);
+    color: rgb(51, 51, 51);
+    column-rule-color: rgb(51, 51, 51);
+    font-family: Roboto, sans-serif;
+    height: 352px;
+    inset-block: 0px;
+    inset-inline: -28.5px 28.5px;
+    line-height: 22.8571px;
+    outline-color: rgb(51, 51, 51);
+    perspective-origin: 540px 176px;
+    text-decoration: none solid rgb(51, 51, 51);
+    text-size-adjust: 100%;
+    transform-origin: 540px 176px;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-in-out;
+    -webkit-locale: &#39;ru&#39;;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-text-emphasis-color: rgb(51, 51, 51);
+    -webkit-text-fill-color: rgb(51, 51, 51);
+    -webkit-text-stroke-color: rgb(51, 51, 51);
+">
+    <div class="header-content" style="
+text-align: -webkit-center;
+    vertical-align: middle;
+">
+        <div class="header-content-inner" style="
+-webkit-text-fill-color: rgb(255, 255, 255);
+">
+             <h1 class="h1-text" style="
+
+">${_('CREATING AN ONLINE COURSE')}</h1>
+<!--
+            <p class="p-text" style="block-size: 52px; border-block-color: rgb(0, 0, 0); border-color: rgb(0, 0, 0); border-inline-color: rgb(0, 0, 0); box-sizing: border-box; caret-color: rgb(51, 51, 51); color: rgb(0, 0, 0); column-rule-color: rgb(0, 0, 0); font-family: Roboto, sans-serif; font-size: 15px; height: 52px; inline-size: 900px; line-height: 26.25px; margin-block: 0px 10px; margin-bottom: 10px; margin-top: 0px; outline-color: rgb(0, 0, 0); perspective-origin: 450px 26px; text-align: justify; text-decoration: none solid rgb(51, 51, 51); text-size-adjust: 100%; transform-origin: 450px 26px; transition-duration: 0.3s; transition-timing-function: ease-in-out; width: 900px; -webkit-locale: &quot;ru&quot;; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); -webkit-text-emphasis-color: rgb(51, 51, 51); -webkit-text-fill-color: rgb(51, 51, 51); -webkit-text-stroke-color: rgb(0, 0, 0);">Казахский национальный университет им. аль-Фараби является лидером среди казахстанских университетов по внедрению MOOК на открытой платформе Open edX.</p>
+-->
+        </div>
+    </div>
+</div>
+<br>
+
+<h3><strong>${_('Requirements for the design of an online course')}&nbsp;</strong></h3>
+
+<style>
+body {
+  font-family: "Open Sans", sans-serif;
+  margin: 0;
+  padding: 0 4em;
+}
+
+@font-face{font-family:icomoon;src:url(/static/kaznu/fonts/icomoon/icomoon.eot?f6kjbt);src:url(/static/kaznu/fonts/icomoon/icomoon.eot?f6kjbt#iefix) format('embedded-opentype'),url(/static/kaznu/fonts/icomoon/icomoon.ttf?f6kjbt) format('truetype'),url(/static/kaznu/fonts/icomoon/icomoon.woff?f6kjbt) format('woff'),url(/static/kaznu/fonts/icomoon/icomoon.svg?f6kjbt#icomoon) format('svg');font-weight:400;font-style:normal;font-display:block}[class*=" icon-"],[class^=icon-]{font-family:icomoon!important;speak:never;font-style:normal;font-weight:600;font-variant:normal;text-transform:none;line-height:1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:2.8em;color:#4295cb}.icon-m1:before{content:"\e900"}.icon-m2:before{content:"\e901"}.icon-m3:before{content:"\e902"}.icon-m4:before{content:"\e903"}.icon-m5:before{content:"\e904"}.icon-m6:before{content:"\e905"}.icon-m7:before{content:"\e906"}.icon-m8:before{content:"\e907"}.icon-m9:before{content:"\e908"}.icon-m10:before{content:"\e909"}.icon-m11:before{content:"\e90a"}.icon-m12:before{content:"\e90b"}.icon-m13:before{content:"\e90c"}.icon-s1:before{content:"\e90d"}.icon-s2:before{content:"\e90e"}.icon-s3:before{content:"\e90f"}.icon-s4:before{content:"\e910"}.icon-s5:before{content:"\e911"}.icon-s6:before{content:"\e912"}
+</style>
+
+<div class="card">
+  <h1>${_('Methodological requirements for the design of the course')} </h1>
+  <details class="warning">
+  <summary>${_('e-UMKD')}</summary>
+<ul class="acc_ul fadeIn">
+<li>${_('E-Syllabus')}</li>
+<li>${_('Announcements for listeners &ndash; 1 per module')}</li>
+<li>${_('Questionnaires questionnaires at the entrance and exit of the course')} </li>
+<li>${_('Synopsis with a list of used sources &ndash; 1 for each topic')}</li>
+<li>${_('Presentation &ndash; 1 for each topic')} </li>
+<li>${_('Additional course materials with active links for reading and viewing online: books, monographs, textbooks, textbooks, documentaries and feature films, TV shows, etc.')}</li>
+<li>${_('Training questions &ndash; at least 10 for each module')}</li>
+<li>${_('Questions for discussion &ndash; in each module at least 1')}</li>
+<li>${_('Test tasks &ndash; at least 3 training and 10 graded questions for each module')}</li>
+<li>${_('Peer-to-peer assessment tasks &ndash; no more than 1-2 for the course')}</li>
+</ul>
+  </details>
+  
+  <details class="warning">
+  <summary>${_('Academic presentation of an online course')} </summary>
+<ul class="acc_ul fadeIn">
+<li>${_('Measurable learning goals')}</li>
+<li>${_('Expected Learning outcomes (RO)')} </li>
+<li>${_('Indicators of achievement of RO')}</li>
+<li>${_('The language of the course is a student-oriented language, accessible to a diverse audience')}</li>
+<li>${_('The duration of the course is not less than 4 and not more than 15 weeks')}</li>
+<li>${_('The load per week on the listener is not less than 2 and not more than 5 hours')}</li>
+</ul>
+  </details>
+  
+</div>
+   
+
+<style>
+
+.card {
+  background: white;
+  padding: 38px 36px;
+  margin-top: 40px;
+  margin-bottom: 40px;
+  border-radius: 4px;
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.1);
+  /*max-width: 30em;*/
+  width: 100%;
+}
+.card h1 {
+  font-family: var(--font-ibm-plex-sans);
+  font-style: normal;
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 1.2;
+  color: var(--color-title);
+  margin-bottom: 20px;
+}
+.card details {
+  display: flex;
+  border-radius: 5px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.05);
+  border-left: 15px solid gray;
+  padding: 15px;
+}
+.card details {
+  margin-top: 15px;
+}
+.card details.warning {
+  --highlight: var(--color-summary-1-highlight) ;
+  background: var(--color-summary-1);
+  border-left-color: var(--color-summary-1-highlight);
+  background-color:#f5f5f5;
+}
+.card details.warning p {
+  list-style-type: corona-warning;
+}
+.card details.info {
+  --highlight: var(--color-summary-2-highlight) ;
+  background: var(--color-summary-2);
+  border-left-color: var(--color-summary-2-highlight);
+}
+.card details.info p {
+  list-style-type: corona-info;
+}
+.card details.alert {
+  --highlight: var(--color-summary-3-highlight) ;
+  background: var(--color-summary-3);
+  border-left-color: var(--highlight);
+}
+.card details.alert p {
+  list-style-type: corona-alert;
+}
+.card details summary, .card details p {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: flex-start;
+  font-family: var(--font-ibm-plex-sans);
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px;
+  color: var(--color-title);
+  padding: 20px;
+  cursor: pointer;
+}
+.card details summary::-webkit-details-marker, .card details p::-webkit-details-marker {
+  display: none;
+}
+.card details summary:focus, .card details p:focus {
+  outline: solid 3px var(--highlight);
+}
+.card details summary::-moz-selection, .card details p::-moz-selection {
+  background-color: var(--highlight);
+}
+.card details summary::selection, .card details p::selection {
+  background-color: var(--highlight);
+}
+.card details p {
+  display: list-item;
+  cursor: default;
+  margin-left: 3rem;
+  list-style-type: corona;
+}
+.card details summary::before {
+  cursor: pointer;
+  position: absolute;
+  display: inline-flex;
+  width: 1rem;
+  height: 1rem;
+  left: 0rem;
+  margin-right: 0.5rem;
+  content: url("data:image/svg+xml,%3Csvg width='100%' height='100%' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M22.6066 12H1.3934' stroke='%23202842' stroke-width='1.875' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M12 1.39343V22.6066' stroke='%23202842' stroke-width='1.875' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E%0A");
+}
+.card details[open] summary {
+  font-weight: 700;
+      transition: visibility 2s linear 2s,opacity 2s linear;
+}
+.card details[open] summary::before {
+  transform: rotate(45deg);
+  content: url("data:image/svg+xml,%3Csvg width='100%' height='100%' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M22.6066 12H1.3934' stroke='%23202842' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M12 1.39343V22.6066' stroke='%23202842' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E%0A");
+}
+.acc_ul {
+text-align: left;
+}
+.fadeIn {
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  30% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
+
+
+<h3 style="text-align: center;"><strong>${_('Technical requirements for the video for the course')}</strong></h3>
+
+
+<div class="card">
+  <h1>${_('Video shooting should be carried out on professional video equipment with video track parameters not lower than the following indicators:')}</h1>
+  <details class="warning">
+  <summary>${_('Video')}</summary>
+  <strong class="acc_ul">${_('Timing')} </strong>
+  <ul class="acc_ul fadeIn">
+<li>${_('Welcome video/Promo video of the course &ndash; no more than 3 minutes')}</li>
+<li>${_('Introduction to the course (purpose, tasks, structure, types of tasks) &ndash; 1.5 minutes')}</li>
+<li>${_('Video lecture &ndash; 3-9 minutes')}</li>
+<li>${_('Video (in total) for 1 week &ndash; not less than 15 and not more than 30 minutes')}</li>
+</ul>
+  <strong class="acc_ul">${_('Technical requirements')}</strong>
+				    <ul class="acc_ul fadeIn">
+						<li>${_('File format (container) &ndash; MP4')}</li>
+						<li>${_('Codec - H264')}</li>
+						<li>${_('Resolution: 1920 x 1080 (1080p)')}</li>
+						<li>${_('The aspect ratio is 16:9')}</li>
+						<li>${_('Frame rate 25 or 30 frames per second')}</li>
+						<li>${_('Progressive scan (25p/30p)')}</li>
+						<li>${_('Bitrate is not lower than 10000 kbit per second, but not more than 30,000 kbit per second')}</li>
+					</ul>
+  </details>
+  
+  <details class="warning">
+  <summary>${_('Audio')}</summary>
+				    <ul class="acc_ul fadeIn">
+						<li>${_('Codec: AAC, AC3, OGG, mp3')}</li>
+						<li>${_('channels: 2 (stereo)')}</li>
+						<li>${_('sampling rate: 48 kHz')}</li>
+						<li>${_('audio stream: CBR not lower than 192 kbit/s, VBR in the range of 160-320 kbit/s')} </li>
+					</ul>
+  </details>
+  
+  <details class="warning">
+  <summary>${_('Qualitative characteristics of the audio track')}</summary>
+				    <ul class="acc_ul fadeIn">
+					<li>${_('The audio track should be in real stereo mode, where the teacher&#39;s voice is localized strictly between the left and right channels. Sound effects, noises, music can be in a similar mode, or can be implemented in a full-fledged stereo mode, depending on artistic and technical tasks.')}</li>
+					<li>${_('The stereo track must be technically implemented taking into account the possibility of playback on monophonic equipment. The value of the correlometer should correspond to &laquo;0&raquo; +/-0.5.')}</li>
+					<li>${_('The signal-to-noise ratio must be at least 40 dB.')}</li>
+					<li>${_('The dynamic range of the useful signal (whisper/loud speech) should be no more than 16 dB.')}</li>
+					<li>${_('The average RMS volume level should be from - 14dB to - 12dB.')}</li>
+					<li>${_('The peak volume level should be limited to -2 dB.')}</li>
+					</ul>
+  </details>
+  
+  <details class="warning">
+  <summary>${_('Qualitative characteristics of the presentation design for the video')} </summary>
+				    <ul class="acc_ul fadeIn">
+<li>${_('The font is recommended to use sans serif.')}</li>
+<li>${_('It is not recommended to use more than 2 fonts per course.')}</li>
+<li>${_('The bullits should be the same throughout the course.')}</li>
+<li>${_('To increase readability, it is recommended to use contrasting combinations of text and background colors.')}</li>
+<li>${_('It is not recommended to use more than 3 font colors per course.')}</li>
+<li>${_('It is not recommended to use contrasting font colors inside one sentence, paragraph, table.')}</li>
+<li>${_('If the background color of the tables is required inside the course, then it is not recommended to use contrasting colors relative to the main background, a small semitone in the light or dark side is enough.')}</li>
+<li>${_('The thickness of the frames, table lines, arrows, should correspond to the thickness of the font line.')}</li>
+<li>${_('As part of the course, it is advisable to use photographic, hand-drawn, animated material in a single color solution, with the same frames, shadows.')}</li>
+<li>${_('It is recommended to use pictograms and infographics.')}</li>
+<li>${_('To ensure a natural viewing experience, it is not recommended to join scenes of the same size.')}</li>
+<li>${_('When shooting, it is not recommended to use contrasting, colorful elements of clothing and makeup.')}</li>
+<li>${_('When filming a teacher, it is not recommended to use checkered elements of clothing and striped clothing.')}</li>
+<li>${_('Slides for video lectures should be typed in the font title 20 pt, the main text 18 pt.')}</li>
+<li>${_('The image size must be at least 1280x720p (HD).')}</li>
+<li>${_('The image must be in PNG format.')}</li>
+<li>${_('All third-party materials used in the course must be licensed with CC Attribution.')}</li>
+<li>${_('Next to each borrowed image (graphics, infographics, photography, reproduction, etc.), a link to the source must be indicated.')}</li>
+<li>${_('After verification by the MOOC Center, the links can be taken to the last slide of the presentation in the &laquo;List of used Sources&raquo;.')}</li>
+					</ul>
+  </details>
+</div>
+
+
+	
+
+<h3 style="text-align: center;"><strong>${_('Stages of online course development')}</strong></h3>
+      
+   
+
+<style>
+
+.timeline {
+  position: relative;
+  padding-left: 4rem;
+  margin: 0 0 0 30px;
+  color: black;
+}
+.timeline:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: #4296cc;
+}
+.timeline .timeline-container {
+  position: relative;
+  margin-bottom: 2.5rem;
+  transition: transform .2s;
+}
+.timeline-body:hover {
+transform: scale(1.01);
+}
+.timeline .timeline-container .timeline-icon {
+    position: absolute;
+    left: -98px;
+    top: -5px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 2.8rem;
+    background: #4f537b;
+}
+}
+.timeline .timeline-container .timeline-icon i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.timeline .timeline-container .timeline-icon img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+.timeline .timeline-container .timeline-body {
+    background: #f5f5f5;
+    background: linear-gradient(269deg, rgb(247 247 247) 0%, rgb(245 245 245) 100%, rgba(245,245,245,1) 100%);
+    border-radius: 3px;
+    padding: 20px 20px 15px;
+    box-shadow: 9px 8px 13px rgb(0 0 0 / 13%);
+	text-align: left;
+}
+.timeline .timeline-container .timeline-body:before {
+  content: "";
+  background: inherit;
+  width: 20px;
+  height: 20px;
+  display: block;
+  position: absolute;
+  left: -10px;
+  transform: rotate(45deg);
+  border-radius: 0 0 0 2px;
+}
+.timeline .timeline-container .timeline-body .timeline-title {
+  margin-bottom: 1.4rem;
+}
+.timeline .timeline-container .timeline-body .timeline-title .badge {
+  background: #4f537b;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: bold;
+}
+.timeline .timeline-container .timeline-body .timeline-subtitle {
+  font-weight: 300;
+  font-style: italic;
+  opacity: 0.4;
+  margin-top: 16px;
+  font-size: 11px;
+}
+.timeline .timeline-container.primary .badge,
+.timeline .timeline-container.primary .timeline-icon {
+  /*background: #1d8cf8 !important;*/
+  background: #f5f5f5 !important;
+}
+.timeline .timeline-container.info .badge,
+.timeline .timeline-container.info .timeline-icon {
+  background: #11cdef !important;
+}
+.timeline .timeline-container.success .badge,
+.timeline .timeline-container.success .timeline-icon {
+  background: #00bf9a !important;
+}
+.timeline .timeline-container.warning .badge,
+.timeline .timeline-container.warning .timeline-icon {
+  background: #ff8d72 !important;
+}
+.timeline .timeline-container.danger .badge,
+.timeline .timeline-container.danger .timeline-icon {
+  background: #fd5d93 !important;
+}
+.ico_step{
+color: #fed136;
+font-size: 1em !important;
+}
+</style>
+
+        <div class="container">
+            <div class="timeline">
+                <div class="timeline-container primary">
+                    <div class="timeline-icon">
+                        <span class="icon-s1 ico_step"></span>
+                    </div>
+                    <div class="timeline-body">
+                        <p>${_('Submitting an application for the development of an online course. Participation in ')} <a href="/competition">${_('competition')}</a> ${_('pedagogical scenarios for creating and publishing online courses (MOOC/SPOC).')} 
+</p>
+                    </div>
+                </div>
+                <div class="timeline-container primary">
+                    <div class="timeline-icon">
+                        <span class="icon-s2 ico_step"></span>
+                    </div>
+                    <div class="timeline-body">
+                        <p><strong>${_('Development of an online course')}</strong></p>
+                    </div>
+                </div>
+                <div class="timeline-container primary">
+                    <div class="timeline-icon">
+                        <span class="icon-s3 ico_step"></span>
+                    </div>
+                    <div class="timeline-body">
+                        <p>${_('1. Preparation of online course materials by the author-developer. ')}<a href="https://drive.google.com/file/d/1RVU9xwh51bYFmtLE4td_8gyYXPrd8hrk/view">${_('List of documents.')}</a> <br>
+${_('To obtain documents on the requirements and recommendations for recording video materials of the online course, contact ')}<a href="/contact">${_('Center for mass open online courses.')}</a>
+</p>
+                    </div>
+                </div>
+                <div class="timeline-container primary">
+                    <div class="timeline-icon">
+                        <span class="icon-s4 ico_step"></span>
+                    </div>
+                    <div class="timeline-body">
+                        <p>${_('2. Methodological and technical expertise of online course materials.')}
+</p>
+                    </div>
+                </div>
+                <div class="timeline-container primary">
+                    <div class="timeline-icon">
+                        <span class="icon-s5 ico_step"></span>
+                    </div>
+                    <div class="timeline-body">
+                        <p>${_('3. Recording video materials of the online course.')}</p>
+                    </div>
+                </div>
+                <div class="timeline-container primary">
+                    <div class="timeline-icon">
+                        <span class="icon-s6 ico_step"></span>
+                    </div>
+                    <div class="timeline-body">
+                        <p>${_('4. Uploading online course materials to the platform.')}</p>
+                    </div>
+                </div>
+                <div class="timeline-container primary">
+                    <div class="timeline-icon">
+                        <span class="icon-s1 ico_step"></span>
+                    </div>
+                    <div class="timeline-body">
+                        <p>${_('5. Beta testing and examination of the course.')} </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+   
+
+
+
+<!--
+<a href="https://docs.google.com/forms/d/e/1FAIpQLSekBgAqtwKI6RNhDx3zyeMB9ZJor7NmJgv6Gr3-Cbzx0R9yLw/viewform?usp=sf_link">
+https://docs.google.com/forms/d/e/1FAIpQLSekBgAqtwKI6RNhDx3zyeMB9ZJor7NmJgv6Gr3-Cbzx0R9yLw/viewform?usp=sf_link </a>
+-->
+<br> <br>
+
+<p style="
+    margin-top: 15px;
+">${_('For all questions, please contact the MOOC Center: building - rectorate, office 203, phone 11-33.')}</p>
+
